@@ -22,3 +22,14 @@ Follow these rules for all commit messages:
 
 4. Keep subject under 72 characters, no period at end.
 5. Use imperative mood ("add", not "added").
+
+## Test Tagging Rules
+
+When creating new Playwright tests, always use **2 tags**: `@feature @type`
+
+- **Features**: `@auth`, `@farm`, `@marketplace`, `@finance`, `@access`, `@api`, `@e2e`
+- **Types**: `@smoke`, `@regression`, `@integration`, `@negative`
+
+Example: `test('should login', { tag: ['@auth', '@smoke'] })`
+
+See #file:TEST_PLAN.md for complete tag definitions and test cases.
