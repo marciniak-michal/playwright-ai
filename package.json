@@ -1,0 +1,29 @@
+{
+  "name": "playwright-ai",
+  "version": "1.0.0",
+  "description": "Test Automation Framework built with Playwright and use of AI",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "codegen": "npx playwright codegen",
+    "test:report": "npx playwright show-report",
+    "install:browsers": "npx playwright install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marciniak-michal/playwright-ai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marciniak-michal/playwright-ai/issues"
+  },
+  "homepage": "https://github.com/marciniak-michal/playwright-ai#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.6.0"
+  }
+}
