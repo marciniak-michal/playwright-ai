@@ -1,3 +1,8 @@
+## Project Technology Stack
+
+This project uses the Playwright Test framework with TypeScript for automated testing.
+When writing or updating tests, always review [playwright.config.ts](../../playwright.config.ts) for project-specific settings (such as test directory, baseURL, reporters and devices).
+
 ## Conventional Commit Rules
 
 Follow these rules for all commit messages:
