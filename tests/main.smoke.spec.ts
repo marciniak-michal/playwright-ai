@@ -8,11 +8,15 @@ test('should display page with Rolnopol title on homepage', { tag: '@smoke' }, a
 });
 
 test('should load login page', { tag: ['@auth', '@smoke'] }, async ({ page }) => {
-  await page.goto('/login.html');
+  const response = await page.goto('/login.html');
+  expect(response).not.toBeNull();
+  expect(response?.ok()).toBeTruthy();
   await expect(page.locator('body')).toBeVisible();
 });
 
 test('should load register page', { tag: ['@auth', '@smoke'] }, async ({ page }) => {
-  await page.goto('/register.html');
+  const response = await page.goto('/register.html');
+  expect(response).not.toBeNull();
+  expect(response?.ok()).toBeTruthy();
   await expect(page.locator('body')).toBeVisible();
 });
