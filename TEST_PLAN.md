@@ -38,6 +38,14 @@ All test cases use a consistent 2-tag pattern: **`@feature @type`**
 
 ## Test Cases
 
+### Smoke Tests
+
+- **Homepage** `@e2e @smoke`: Load homepage → page title contains "Rolnopol"
+- **Login page load** `@auth @smoke`: Navigate to /login.html → login page loads with correct subtitle
+- **Register page load** `@auth @smoke`: Navigate to /register.html → register page loads with correct subtitle
+- **Docs UI** `@api @smoke`: Access /docs.html → documentation page loads with correct subtitle
+- **Swagger UI** `@api @smoke`: Access /swagger.html → API documentation loads in iframe
+
 ### Authentication
 
 - **Registration** `@auth @regression`: New user creates account → auto-login, redirected to dashboard
@@ -84,7 +92,6 @@ All test cases use a consistent 2-tag pattern: **`@feature @type`**
 - **Health check** `@api @smoke`: GET health endpoint → status returned
 - **No auth** `@api @negative`: API request without token → 401 Unauthorized
 - **With auth** `@api @smoke`: API request with valid token → successful response
-- **Swagger UI** `@api @smoke`: Access /swagger.html → documentation loads
 
 ---
 

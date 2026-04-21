@@ -21,17 +21,19 @@ test('should load register page', { tag: ['@auth', '@smoke'] }, async ({ page })
   await expect(page.getByTestId('register-subtitle')).toHaveText(expectedSubtitle);
 });
 
-test('should load docs page', { tag: '@smoke' }, async ({ page }) => {
+test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
   const expectedSubtitle = 'Rolnopol System Guide & API Reference';
 
   await page.goto('/docs.html');
   await expect(page.locator('.docs-header-subtitle')).toHaveText(expectedSubtitle);
 });
 
-test('should load swagger page', { tag: '@smoke' }, async ({ page }) => {
+test('should load swagger page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
   const expectedDescription = 'API documentation for the Rolnopol service with versioning support';
 
   await page.goto('/swagger.html');
   const iframe = page.frameLocator('iframe#swagger-frame');
-  await expect(iframe.locator('.information-container .renderedMarkdown')).toHaveText(expectedDescription);
+  await expect(iframe.locator('.information-container .renderedMarkdown')).toHaveText(
+    expectedDescription
+  );
 });
