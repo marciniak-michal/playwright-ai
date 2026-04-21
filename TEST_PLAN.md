@@ -1,113 +1,209 @@
-# Test Plan - Rolnopol
+# Rolnopol Test Plan
 
-**App:** http://localhost:3000/  
-**Docs:** http://localhost:3000/docs.html  
-**API:** http://localhost:3000/swagger.html
+## 1. Document Control
 
-## Overview
+- Product: Rolnopol
+- Framework: Playwright Test + TypeScript
+- Repository: playwright-ai
+- Environment under test:
+  - App: http://localhost:3000/
+  - Docs: http://localhost:3000/docs.html
+  - API UI: http://localhost:3000/swagger.html
+- Ownership:
+  - QA/Automation: responsible for coverage and test design
+  - Engineering: responsible for feature correctness and testability
 
-Agricultural management system for farmers, admins, and superadmins. Supports farm resources, marketplace trading, and financial operations.
+## 2. Purpose and Quality Goals
 
-## Test Scope
+This document defines a maintainable, extensible strategy for automated testing of Rolnopol.
 
-**In Scope:** Authentication, farm management (fields/animals/staff), marketplace, finances, role-based access, API  
-**Out of Scope:** Performance, security testing, mobile
+Primary quality goals:
 
-## Tag Convention
+- Prevent critical user-facing regressions in core flows.
+- Validate business rules for farm, marketplace, and finance domains.
+- Verify role-based access controls and API contract basics.
+- Keep test suites fast, stable, and easy to evolve.
 
-All test cases use a consistent 2-tag pattern: **`@feature @type`**
+## 3. Test Scope
 
-**Feature tags:**
+In scope:
 
-- `@auth` - Authentication & session management
-- `@farm` - Farm resources (fields, animals, staff, assignments)
-- `@marketplace` - Offers and purchases
-- `@finance` - Balance, transactions, transfers
-- `@access` - Role-based access control
-- `@api` - API endpoints and documentation
-- `@e2e` - End-to-end user journeys
+- Authentication and session behavior
+- Farm management (fields, animals, staff, assignments)
+- Marketplace lifecycle (offer creation, purchase, cancellation)
+- Financial operations (balances, transfers, transaction history)
+- Access control by role (farmer, admin, superadmin)
+- API availability and authorization basics
+- Cross-module end-to-end user journeys
 
-**Type tags:**
+Out of scope:
 
-- `@smoke` - Critical happy path tests
-- `@regression` - Standard functional tests
-- `@integration` - Multi-component interactions
-- `@negative` - Error handling and validation
+- Load/performance testing
+- Security penetration testing
+- Mobile-specific validation
 
----
+## 4. Test Strategy
 
-## Test Cases
+Test levels:
 
-### Smoke Tests
+- Smoke: fast confidence checks for deployment readiness
+- Regression: broad functional verification after changes
+- Integration: workflows across multiple modules
+- Negative: error handling, validation, and denial paths
 
-- **Homepage** `@e2e @smoke`: Load homepage → page title contains "Rolnopol"
-- **Login page load** `@auth @smoke`: Navigate to /login.html → login page loads with correct subtitle
-- **Register page load** `@auth @smoke`: Navigate to /register.html → register page loads with correct subtitle
-- **Docs UI** `@api @smoke`: Access /docs.html → documentation page loads with correct subtitle
-- **Swagger UI** `@api @smoke`: Access /swagger.html → API documentation loads in iframe
+Execution principle:
 
-### Authentication
+- Every feature area has at least one smoke scenario.
+- Critical business rules are covered by regression and negative tests.
+- Multi-step business workflows are covered by integration or e2e tests.
 
-- **Registration** `@auth @regression`: New user creates account → auto-login, redirected to dashboard
-- **Login** `@auth @smoke`: Valid credentials → token set, cookies created, redirect to /profile.html
-- **Login failure** `@auth @negative`: Invalid credentials → error message shown
-- **Logout** `@auth @smoke`: Clear cookies, invalidate session
-- **Session expiration** `@auth @regression`: After 24h (user) / 1h (admin) → redirect to login
-- **Rate limiting** `@auth @negative`: Multiple failed attempts → temporary block
+## 5. Tagging Standard (Mandatory)
 
-### Farm Management
+Every test should include 2 tags:
 
-- **Add field** `@farm @smoke`: Create field with name and area → displayed in farm overview
-- **Edit field** `@farm @regression`: Update field details → changes saved
-- **Delete field** `@farm @regression`: Remove unassigned field → removed from list
-- **Add animals** `@farm @regression`: Create animal (type, amount) → added to farm, optionally assign to field
-- **Add staff** `@farm @regression`: Create staff member (name, age) → added to farm
-- **Assignments** `@farm @integration`: Assign staff/animals to fields → linking recorded
+- 1 feature tag
+- 1 type tag
 
-### Marketplace
+Pattern:
 
-- **Create offer (unassigned)** `@marketplace @smoke`: Offer for unassigned field/animal → status 'active'
-- **Create offer (assigned)** `@marketplace @negative`: Offer for assigned asset → status 'unavailable'
-- **Buy offer** `@marketplace @smoke`: User B buys User A's offer → ownership transferred, balances updated, offer marked 'sold'
-- **Buy with insufficient funds** `@marketplace @negative`: Try purchase exceeding balance → blocked with error "Insufficient funds: overdraft is not allowed"
-- **Buy own offer** `@marketplace @negative`: Try purchasing own offer → blocked with error
-- **Cancel offer** `@marketplace @regression`: Cancel active offer → status changed to 'cancelled'
+- `@feature @type`
 
-### Financial Operations
+Allowed feature tags:
 
-- **View balance** `@finance @smoke`: Check current account balance → displayed correctly
-- **View transactions** `@finance @regression`: Review transaction history → all income/expense listed
-- **Transfer funds** `@finance @regression`: Transfer between users → both balances updated, transactions recorded
-- **Transfer exceeding balance** `@finance @negative`: Try transfer > balance → blocked with error
-- **Sale transaction** `@finance @integration`: Complete marketplace sale → seller gets income, buyer gets expense
+- `@auth` - authentication and session lifecycle
+- `@farm` - farm resources and assignments
+- `@marketplace` - offers and purchase workflows
+- `@finance` - balances, transfers, transactions
+- `@access` - role-based authorization rules
+- `@api` - API endpoint and documentation validation
+- `@e2e` - cross-module user journeys
 
-### Access Control
+Allowed type tags:
 
-- **Farmer restrictions** `@access @negative`: Farmer tries admin features → access denied
-- **Admin access** `@access @smoke`: Admin views all users' resources → full access granted
-- **Superadmin access** `@access @smoke`: Superadmin accesses all features → full system access
+- `@smoke` - critical, fast, release confidence
+- `@regression` - broader functional verification
+- `@integration` - multi-component behavior
+- `@negative` - invalid or failure conditions
 
-### API
+Compliance notes:
 
-- **Health check** `@api @smoke`: GET health endpoint → status returned
-- **No auth** `@api @negative`: API request without token → 401 Unauthorized
-- **With auth** `@api @smoke`: API request with valid token → successful response
+- Avoid custom tags unless added to this document first.
+- Tests with legacy or non-standard tags should be migrated gradually to this standard.
 
----
+## 6. Test Design Pattern
 
-## End-to-End Scenarios
+Use this Given/When/Then style to keep cases clear and reusable.
 
-**New User Journey** `@e2e @smoke`: Register → login → add field → add animals → add staff → create assignment → create marketplace offer → view finances → logout
+## 7. Functional Coverage Matrix
 
-**Marketplace Trade** `@e2e @integration`: User A creates offer → User B purchases → verify ownership transfer and financial transactions
+### 7.1 Smoke Suite
 
-**Failed Purchase** `@e2e @negative`: User creates field → assigns staff → creates offer (unavailable) → another user tries to buy → blocked
+- E2E-SMOKE-001 - Homepage loads with Rolnopol title (`@e2e @smoke`)
+- AUTH-SMOKE-001 - Login page loads with expected subtitle (`@auth @smoke`)
+- AUTH-SMOKE-002 - Register page loads with expected subtitle (`@auth @smoke`)
+- API-SMOKE-001 - Docs page loads (`@api @smoke`)
+- API-SMOKE-002 - Swagger page and API frame load (`@api @smoke`)
 
----
+### 7.2 Authentication
 
-## Notes
+- AUTH-REG-001 - Register new user and redirect to dashboard (`@auth @regression`)
+- AUTH-SMOKE-003 - Login with valid credentials (`@auth @smoke`)
+- AUTH-NEG-001 - Login with invalid credentials shows error (`@auth @negative`)
+- AUTH-SMOKE-004 - Logout clears session and cookies (`@auth @smoke`)
+- AUTH-REG-002 - Session expiry redirects to login (`@auth @regression`)
+- AUTH-NEG-002 - Repeated failed logins trigger rate limiting (`@auth @negative`)
 
-- Use demo accounts from documentation
-- Test environment: localhost:3000
-- Password storage is plain text (demo only)
-- Cookies are accessible to JavaScript (not httpOnly)
+### 7.3 Farm Management
+
+- FARM-SMOKE-001 - Create field and display in overview (`@farm @smoke`)
+- FARM-REG-001 - Edit field details (`@farm @regression`)
+- FARM-REG-002 - Delete unassigned field (`@farm @regression`)
+- FARM-REG-003 - Add animals and optional field assignment (`@farm @regression`)
+- FARM-REG-004 - Add staff member (`@farm @regression`)
+- FARM-INT-001 - Assign staff/animals to fields (`@farm @integration`)
+
+### 7.4 Marketplace
+
+- MKT-SMOKE-001 - Create offer for eligible unassigned asset (`@marketplace @smoke`)
+- MKT-NEG-001 - Block offer for assigned asset (`@marketplace @negative`)
+- MKT-SMOKE-002 - Purchase offer transfers ownership and updates balances (`@marketplace @smoke`)
+- MKT-NEG-002 - Block purchase with insufficient funds (`@marketplace @negative`)
+- MKT-NEG-003 - Block purchase of own offer (`@marketplace @negative`)
+- MKT-REG-001 - Cancel active offer (`@marketplace @regression`)
+
+### 7.5 Financial Operations
+
+- FIN-SMOKE-001 - Display current account balance (`@finance @smoke`)
+- FIN-REG-001 - Display transaction history (`@finance @regression`)
+- FIN-REG-002 - Transfer funds between users (`@finance @regression`)
+- FIN-NEG-001 - Block transfer above available balance (`@finance @negative`)
+- FIN-INT-001 - Marketplace sale produces correct ledger impact (`@finance @integration`)
+
+### 7.6 Access Control
+
+- ACC-NEG-001 - Farmer denied admin-only actions (`@access @negative`)
+- ACC-SMOKE-001 - Admin can view users' resources (`@access @smoke`)
+- ACC-SMOKE-002 - Superadmin has full system access (`@access @smoke`)
+
+### 7.7 API
+
+- API-SMOKE-003 - Health endpoint returns success (`@api @smoke`)
+- API-NEG-001 - Unauthorized request without token returns 401 (`@api @negative`)
+- API-SMOKE-004 - Authorized request with valid token succeeds (`@api @smoke`)
+
+### 7.8 End-to-End Journeys
+
+- E2E-SMOKE-002 - New user journey: register to logout (`@e2e @smoke`)
+- E2E-INT-001 - Marketplace trade between two users (`@e2e @integration`)
+- E2E-NEG-001 - Failed purchase due to business rule constraint (`@e2e @negative`)
+
+## 8. Test Data and Environment Rules
+
+- Use deterministic demo accounts and seeded fixtures.
+- Isolate data per test where possible; avoid cross-test coupling.
+- Prefer API/setup helpers over long UI setup chains for non-UI preconditions.
+- Ensure each test can run independently and in parallel.
+
+## 9. Entry and Exit Criteria
+
+Entry criteria:
+
+- Target environment is reachable.
+- Required seed data and credentials are available.
+- Core pages (`/`, `/login.html`, `/register.html`) are operational.
+
+Exit criteria:
+
+- Smoke suite passes 100%.
+- No open critical defects in covered areas.
+- Regression failures are triaged with clear ownership.
+
+## 10. Maintenance and Extension Guidelines
+
+When adding new features/tests:
+
+1. Add/confirm feature mapping in Section 7.
+2. Follow Section 5 tagging standard (`@feature @type`).
+3. Use the Section 6 test case template.
+4. Keep titles behavior-focused and stable.
+5. Prefer resilient selectors (`data-testid`) over visual/text-only locators.
+6. Update this plan in the same pull request as new test coverage.
+
+Naming conventions:
+
+- Test files: `<area>.<type>.spec.ts` (example: `marketplace.regression.spec.ts`)
+- Test titles: `should <expected behavior> when <condition>`
+- IDs in plan: `<AREA>-<TYPE>-<NNN>`
+
+## 11. Risks and Assumptions
+
+Assumptions:
+
+- Local environment uses `http://localhost:3000`.
+- Demo implementation details (for example cookie policy) may differ from production-grade security practices.
+
+Risks:
+
+- UI copy changes can cause brittle assertions if text matching is too strict.
+- Shared mutable test data can create flaky behavior in parallel runs.
+- Incomplete tag compliance can reduce suite filtering quality.
