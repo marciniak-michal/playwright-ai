@@ -8,15 +8,32 @@ test('should display page with Rolnopol title on homepage', { tag: '@smoke' }, a
 });
 
 test('should load login page', { tag: ['@auth', '@smoke'] }, async ({ page }) => {
-  const response = await page.goto('/login.html');
-  expect(response).not.toBeNull();
-  expect(response?.ok()).toBeTruthy();
-  await expect(page.locator('body')).toBeVisible();
+  const expectedSubtitle = 'User Login & Account Access';
+
+  await page.goto('/login.html');
+  await expect(page.getByTestId('login-subtitle')).toHaveText(expectedSubtitle);
 });
 
 test('should load register page', { tag: ['@auth', '@smoke'] }, async ({ page }) => {
-  const response = await page.goto('/register.html');
-  expect(response).not.toBeNull();
-  expect(response?.ok()).toBeTruthy();
-  await expect(page.locator('body')).toBeVisible();
+  const expectedSubtitle = 'Create Your User Account';
+
+  await page.goto('/register.html');
+  await expect(page.getByTestId('register-subtitle')).toHaveText(expectedSubtitle);
+});
+
+test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
+  const expectedSubtitle = 'Rolnopol System Guide & API Reference';
+
+  await page.goto('/docs.html');
+  await expect(page.locator('.docs-header-subtitle')).toHaveText(expectedSubtitle);
+});
+
+test('should load swagger page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
+  const expectedDescription = 'API documentation for the Rolnopol service with versioning support';
+
+  await page.goto('/swagger.html');
+  const iframe = page.frameLocator('iframe#swagger-frame');
+  await expect(iframe.locator('.information-container .renderedMarkdown')).toHaveText(
+    expectedDescription
+  );
 });
