@@ -37,4 +37,4 @@ When creating new Playwright tests, always use **2 tags**: `@feature @type`
 
 Example: `test('should login', { tag: ['@auth', '@smoke'] })`
 
-See #file:TEST_PLAN.md for complete tag definitions and test cases.
+See #file:../TEST_PLAN.md for complete tag definitions and test cases.
