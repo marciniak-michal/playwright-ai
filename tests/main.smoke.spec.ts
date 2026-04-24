@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { generateUniqueEmail } from '../src/helpers/testDataHelper';
 import { RegisterPage } from '../src/pages/register.page';
 
 test('should display page with Rolnopol title on homepage', { tag: '@smoke' }, async ({ page }) => {
@@ -67,7 +68,7 @@ test(
   async ({ page }) => {
     // Arrange
     const registerPage = new RegisterPage(page);
-    const email = `testuser${Date.now()}@example.com`;
+    const email = generateUniqueEmail();
     const displayName = 'Test User';
     const password = 'Test123!';
 
