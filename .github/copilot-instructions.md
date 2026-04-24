@@ -46,3 +46,14 @@ All tests must follow the **Arrange-Act-Assert (AAA)** pattern with clear commen
 1. **Arrange**: Set up test data, navigate to pages, prepare the initial state
 2. **Act**: Perform the action being tested (click, fill, submit, etc.)
 3. **Assert**: Verify the expected outcomes and behavior
+
+## Page Object Pattern Rules
+
+When implementing Page Objects:
+
+1. **No Assertions in Page Objects**: Page Object classes should ONLY contain:
+   - Locator definitions
+   - Navigation methods
+   - Action methods (fill, click, etc.)
+2. **Assertions Stay in Tests**: All verifications and validations using `expect()` must remain in test files only.
+3. **Expose Locators**: Make locators public (`readonly`) so tests can perform assertions directly on them.

@@ -57,7 +57,7 @@ test(
     await registerPage.goto();
 
     // Assert
-    await registerPage.expectSubtitleToHaveText(expectedSubtitle);
+    await expect(registerPage.subtitle).toHaveText(expectedSubtitle);
   }
 );
 
@@ -77,6 +77,7 @@ test(
     await registerPage.register(uniqueEmail, displayName, password);
 
     // Assert
-    await registerPage.expectSuccessfulRegistration();
+    await expect(registerPage.successMessage).toBeVisible();
+    await expect(page).toHaveURL(/.*\/login\.html/);
   }
 );

@@ -29,13 +29,4 @@ export class RegisterPage {
     await this.passwordInput.fill(password);
     await this.submitButton.click();
   }
-
-  async expectSubtitleToHaveText(expectedText: string) {
-    await expect(this.subtitle).toHaveText(expectedText);
-  }
-
-  async expectSuccessfulRegistration() {
-    await expect(this.successMessage).toBeVisible();
-    await expect(this.page).toHaveURL(/.*\/login\.html/);
-  }
 }
