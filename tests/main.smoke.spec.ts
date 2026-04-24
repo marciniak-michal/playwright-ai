@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { RegisterPage } from '../pages/register.page';
+import { RegisterPage } from '../src/pages/register.page';
 
 test('should display page with Rolnopol title on homepage', { tag: '@smoke' }, async ({ page }) => {
   // Act
