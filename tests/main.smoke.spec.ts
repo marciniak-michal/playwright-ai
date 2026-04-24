@@ -67,14 +67,14 @@ test(
   async ({ page }) => {
     // Arrange
     const registerPage = new RegisterPage(page);
-    const uniqueEmail = `testuser${Date.now()}@example.com`;
+    const email = `testuser${Date.now()}@example.com`;
     const displayName = 'Test User';
     const password = 'Test123!';
 
     await registerPage.goto();
 
     // Act
-    await registerPage.register(uniqueEmail, displayName, password);
+    await registerPage.register(email, password, displayName);
 
     // Assert
     await expect(registerPage.successMessage).toBeVisible();
