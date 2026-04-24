@@ -38,3 +38,11 @@ When creating new Playwright tests, always use **2 tags**: `@feature @type`
 Example: `test('should login', { tag: ['@auth', '@smoke'] })`
 
 See #file:../TEST_PLAN.md for complete tag definitions and test cases.
+
+## Test Structure: Arrange-Act-Assert Pattern
+
+All tests must follow the **Arrange-Act-Assert (AAA)** pattern with clear comments:
+
+1. **Arrange**: Set up test data, navigate to pages, prepare the initial state
+2. **Act**: Perform the action being tested (click, fill, submit, etc.)
+3. **Assert**: Verify the expected outcomes and behavior
