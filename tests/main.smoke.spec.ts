@@ -37,3 +37,26 @@ test('should load swagger page', { tag: ['@smoke', '@documentation'] }, async ({
     expectedDescription
   );
 });
+
+test(
+  'should successfully register a new user',
+  { tag: ['@smoke', '@auth', '@registration'] },
+  async ({ page }) => {
+    // Arrange
+    const uniqueEmail = `testuser${Date.now()}@example.com`;
+    const displayName = 'Test User';
+    const password = 'Test123!';
+
+    await page.goto('/register.html');
+
+    // Act
+    await page.getByTestId('email-input').fill(uniqueEmail);
+    await page.getByTestId('display-name-input').fill(displayName);
+    await page.getByTestId('password-input').fill(password);
+    await page.getByTestId('register-submit-btn').click();
+
+    // Assert
+    await expect(page.getByText('Registration successful!')).toBeVisible();
+    await expect(page).toHaveURL(/.*\/login\.html/);
+  }
+);
