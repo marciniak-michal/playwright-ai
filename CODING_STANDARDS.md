@@ -2,11 +2,17 @@
 
 ## Test Structure: Arrange-Act-Assert Pattern
 
-All tests must follow the **Arrange-Act-Assert (AAA)** pattern with clear comments:
+All tests must follow the **Arrange-Act-Assert (AAA)** pattern:
 
 1. **Arrange**: Set up test data, navigate to pages, prepare the initial state
 2. **Act**: Perform the action being tested (click, fill, submit, etc.)
 3. **Assert**: Verify the expected outcomes and behavior
+
+### Comment Guidance
+
+1. Prefer clear test flow over mechanical `Arrange` / `Act` / `Assert` comments when the structure is already obvious.
+2. Remove obvious or repetitive inline comments that only restate the code.
+3. Keep or add short JSDoc comments only when they explain intent, context, or architectural boundaries.
 
 ## Page Object Pattern
 

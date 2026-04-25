@@ -2,6 +2,7 @@ import { type Locator, type Page } from '@playwright/test';
 import { PAGE_URLS } from '../constants/pageUrls';
 import { BasePage } from './base.page';
 
+/** Page object for the documentation screen. */
 export class DocsPage extends BasePage {
   protected readonly PAGE_URL = PAGE_URLS.DOCS;
   readonly headerSubtitle: Locator;
