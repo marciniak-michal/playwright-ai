@@ -3,8 +3,13 @@
 This project uses the Playwright Test framework with TypeScript for automated testing.
 When writing or updating tests, always review [playwright.config.ts](../playwright.config.ts) for project-specific settings (such as test directory, baseURL, reporters and devices).
 
+## Coding Standards
+
+All code must follow the detailed implementation guidelines in [CODING_STANDARDS.md](../CODING_STANDARDS.md). This includes Page Object Pattern implementation, test structure (Arrange-Act-Assert pattern), locator usage, and code organization best practices. Always review these standards when writing or updating code.
+
 ## Conventional Commit Rules
 
+Do not run all tests before committing code.
 Follow these rules for all commit messages:
 
 1. Use this format:
@@ -30,11 +35,11 @@ Follow these rules for all commit messages:
 
 ## Test Tagging Rules
 
-When creating new Playwright tests, always use **2 tags**: `@feature @type`
+When creating new Playwright tests, always use minimum **2 tags**: `@feature @type`
 
-- **Features**: `@auth`, `@farm`, `@marketplace`, `@finance`, `@access`, `@api`, `@e2e`
-- **Types**: `@smoke`, `@regression`, `@integration`, `@negative`
+- **Features**: `@auth`, `@farm`, `@marketplace`, `@finance`, `@access`, `@api`, `@e2e` (or other relevant feature tags)
+- **Types**: `@smoke`, `@regression`, `@integration`, `@negative` (or other relevant type tags)
 
 Example: `test('should login', { tag: ['@auth', '@smoke'] })`
 
-See #file:TEST_PLAN.md for complete tag definitions and test cases.
+See #file:../TEST_PLAN.md for complete tag definitions and test cases.
