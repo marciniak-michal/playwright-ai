@@ -1,8 +1,9 @@
 import { type Locator, type Page } from '@playwright/test';
+import { PAGE_URLS } from '../constants/pageUrls';
 import { BasePage } from './base.page';
 
 export class RegisterPage extends BasePage {
-  protected readonly PAGE_URL = '/register.html';
+  protected readonly PAGE_URL = PAGE_URLS.REGISTER;
   readonly emailInput: Locator;
   readonly displayNameInput: Locator;
   readonly passwordInput: Locator;
