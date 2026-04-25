@@ -3,6 +3,10 @@
 This project uses the Playwright Test framework with TypeScript for automated testing.
 When writing or updating tests, always review [playwright.config.ts](../playwright.config.ts) for project-specific settings (such as test directory, baseURL, reporters and devices).
 
+## Coding Standards
+
+All code must follow the detailed implementation guidelines in [CODING_STANDARDS.md](../CODING_STANDARDS.md). This includes Page Object Pattern implementation, test structure (Arrange-Act-Assert pattern), locator usage, and code organization best practices. Always review these standards when writing or updating code.
+
 ## Conventional Commit Rules
 
 Follow these rules for all commit messages:
@@ -30,7 +34,7 @@ Follow these rules for all commit messages:
 
 ## Test Tagging Rules
 
-When creating new Playwright tests, always use **2 tags**: `@feature @type`
+When creating new Playwright tests, always use minimum **2 tags**: `@feature @type`
 
 - **Features**: `@auth`, `@farm`, `@marketplace`, `@finance`, `@access`, `@api`, `@e2e`
 - **Types**: `@smoke`, `@regression`, `@integration`, `@negative`
@@ -38,22 +42,3 @@ When creating new Playwright tests, always use **2 tags**: `@feature @type`
 Example: `test('should login', { tag: ['@auth', '@smoke'] })`
 
 See #file:../TEST_PLAN.md for complete tag definitions and test cases.
-
-## Test Structure: Arrange-Act-Assert Pattern
-
-All tests must follow the **Arrange-Act-Assert (AAA)** pattern with clear comments:
-
-1. **Arrange**: Set up test data, navigate to pages, prepare the initial state
-2. **Act**: Perform the action being tested (click, fill, submit, etc.)
-3. **Assert**: Verify the expected outcomes and behavior
-
-## Page Object Pattern Rules
-
-When implementing Page Objects:
-
-1. **No Assertions in Page Objects**: Page Object classes should ONLY contain:
-   - Locator definitions
-   - Navigation methods
-   - Action methods (fill, click, etc.)
-2. **Assertions Stay in Tests**: All verifications and validations using `expect()` must remain in test files only.
-3. **Expose Locators**: Make locators public (`readonly`) so tests can perform assertions directly on them.

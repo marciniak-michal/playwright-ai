@@ -1,5 +1,13 @@
 # Coding Standards
 
+## Test Structure: Arrange-Act-Assert Pattern
+
+All tests must follow the **Arrange-Act-Assert (AAA)** pattern with clear comments:
+
+1. **Arrange**: Set up test data, navigate to pages, prepare the initial state
+2. **Act**: Perform the action being tested (click, fill, submit, etc.)
+3. **Assert**: Verify the expected outcomes and behavior
+
 ## Page Object Pattern
 
 Follow these best practices when implementing Page Objects in Playwright tests:
