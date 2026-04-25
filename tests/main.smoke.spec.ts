@@ -1,49 +1,60 @@
 import { expect, test } from '@playwright/test';
 import { generateUniqueEmail } from '../src/helpers/testDataHelper';
+import { DocsPage } from '../src/pages/docs.page';
+import { HomePage } from '../src/pages/home.page';
+import { LoginPage } from '../src/pages/login.page';
 import { RegisterPage } from '../src/pages/register.page';
+import { SwaggerPage } from '../src/pages/swagger.page';
 
-test('should display page with Rolnopol title on homepage', { tag: '@smoke' }, async ({ page }) => {
-  // Act
-  await page.goto('/');
+test(
+  'should display page with Rolnopol title on homepage',
+  { tag: ['@e2e', '@smoke'] },
+  async ({ page }) => {
+    // Arrange
+    const homePage = new HomePage(page);
 
-  // Assert
-  await expect(page).toHaveTitle(/Rolnopol/);
-});
+    // Act
+    await homePage.goto();
+
+    // Assert
+    await expect(page).toHaveTitle(/Rolnopol/);
+  }
+);
 
 test('should load login page', { tag: ['@auth', '@smoke'] }, async ({ page }) => {
   // Arrange
   const expectedSubtitle = 'User Login & Account Access';
+  const loginPage = new LoginPage(page);
 
   // Act
-  await page.goto('/login.html');
+  await loginPage.goto();
 
   // Assert
-  await expect(page.getByTestId('login-subtitle')).toHaveText(expectedSubtitle);
+  await expect(loginPage.subtitle).toHaveText(expectedSubtitle);
 });
 
 test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
   // Arrange
   const expectedSubtitle = 'Rolnopol System Guide & API Reference';
+  const docsPage = new DocsPage(page);
 
   // Act
-  await page.goto('/docs.html');
+  await docsPage.goto();
 
   // Assert
-  await expect(page.locator('.docs-header-subtitle')).toHaveText(expectedSubtitle);
+  await expect(docsPage.headerSubtitle).toHaveText(expectedSubtitle);
 });
 
 test('should load swagger page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
   // Arrange
   const expectedDescription = 'API documentation for the Rolnopol service with versioning support';
-  const iframe = page.frameLocator('iframe#swagger-frame');
+  const swaggerPage = new SwaggerPage(page);
 
   // Act
-  await page.goto('/swagger.html');
+  await swaggerPage.goto();
 
   // Assert
-  await expect(iframe.locator('.information-container .renderedMarkdown')).toHaveText(
-    expectedDescription
-  );
+  await expect(swaggerPage.apiDescription).toHaveText(expectedDescription);
 });
 
 test(
