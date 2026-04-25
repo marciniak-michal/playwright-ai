@@ -9,6 +9,7 @@ All code must follow the detailed implementation guidelines in [CODING_STANDARDS
 
 ## Conventional Commit Rules
 
+Do not run all tests before committing code.
 Follow these rules for all commit messages:
 
 1. Use this format:

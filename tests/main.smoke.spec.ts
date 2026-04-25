@@ -18,7 +18,7 @@ test(
   }
 );
 
-test('should load login page', { tag: ['@auth', '@smoke'] }, async ({ page }) => {
+test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ page }) => {
   const expectedSubtitle = 'User Login & Account Access';
   const loginPage = new LoginPage(page);
 
@@ -60,7 +60,7 @@ test(
 
 test(
   'should successfully register a new user',
-  { tag: ['@smoke', '@auth', '@registration'] },
+  { tag: ['@auth', '@smoke', '@registration'] },
   async ({ page }) => {
     const registerPage = new RegisterPage(page);
     const email = generateUniqueEmail();
