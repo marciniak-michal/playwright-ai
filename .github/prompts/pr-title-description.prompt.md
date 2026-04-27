@@ -1,7 +1,6 @@
 ---
 name: pr-title-description
 description: When creating new Pull Request
-agent: ask
 ---
 
 Propose a clear and concise title and description for a Pull Request based on the recent changes.

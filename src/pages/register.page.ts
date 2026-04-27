@@ -10,6 +10,7 @@ export class RegisterPage extends BasePage {
   readonly passwordInput: Locator;
   readonly submitButton: Locator;
   readonly successMessage: Locator;
+  readonly errorAlert: Locator;
   readonly subtitle: Locator;
 
   constructor(page: Page) {
@@ -19,6 +20,7 @@ export class RegisterPage extends BasePage {
     this.passwordInput = page.getByTestId('password-input');
     this.submitButton = page.getByTestId('register-submit-btn');
     this.successMessage = page.getByText('Registration successful!');
+    this.errorAlert = page.locator('[role="alert"]');
     this.subtitle = page.getByTestId('register-subtitle');
   }
 

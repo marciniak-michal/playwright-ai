@@ -40,14 +40,32 @@ All test cases use a consistent 2-tag pattern: **`@feature @type`**
 
 ### Authentication
 
+#### Login
+
 - **Load login page** `@auth @smoke @login`: Navigate to /login.html → subtitle "User Login & Account Access" visible ✅
+- **Login** `@auth @regression @login`: Valid credentials → token set, cookies created, redirect to /profile.html _(planned)_
+- **Login failure** `@auth @negative @login`: Invalid credentials → error message shown _(planned)_
+- **Logout** `@auth @smoke @login`: Clear cookies, invalidate session _(planned)_
+- **Session expiration** `@auth @regression @login`: After 24h (user) / 1h (admin) → redirect to login _(planned)_
+- **Rate limiting** `@auth @negative @login`: Multiple failed attempts → temporary block _(planned)_
+
+#### Registration - Positive Tests
+
 - **Load register page** `@auth @smoke @registration`: Navigate to /register.html → subtitle "Create Your User Account" visible ✅
-- **Registration** `@auth @smoke @registration`: New user creates account → success message shown, redirected to /login.html ✅
-- **Login** `@auth @regression`: Valid credentials → token set, cookies created, redirect to /profile.html _(planned)_
-- **Login failure** `@auth @negative`: Invalid credentials → error message shown _(planned)_
-- **Logout** `@auth @smoke`: Clear cookies, invalidate session _(planned)_
-- **Session expiration** `@auth @regression`: After 24h (user) / 1h (admin) → redirect to login _(planned)_
-- **Rate limiting** `@auth @negative`: Multiple failed attempts → temporary block _(planned)_
+- **Successful registration** `@auth @smoke @registration`: New user creates account with all fields → success message shown, redirected to /login.html ✅
+- **Registration without display name** `@auth @regression @registration`: Register with only email and password → success message shown ✅
+- **Minimum password length** `@auth @regression @registration`: Register with exactly 3 character password → registration successful ✅
+
+#### Registration - Negative Tests
+
+- **Empty form submission** `@auth @negative @registration`: Submit empty form → validation error on required fields ✅
+- **Invalid email without @** `@auth @negative @registration`: Email without @ symbol → validation error mentioning @ ✅
+- **Email with spaces** `@auth @negative @registration`: Email containing spaces → validation error shown ✅
+- **Password too short** `@auth @negative @registration`: Password with less than 3 characters → validation error shown ✅
+- **Display name too short** `@auth @negative @registration`: Display name with less than 3 characters → validation error shown ✅
+- **Display name truncation** `@auth @negative @registration`: Display name exceeding 20 characters → automatically truncated to 20 chars ✅
+- **Duplicate email** `@auth @negative @registration`: Register with existing email → error message "User with this email already exists" ✅
+- **Whitespace-only password** `@auth @negative @registration`: Password with only spaces → error message "Password must be at least 3 characters long" ✅
 
 ### API
 

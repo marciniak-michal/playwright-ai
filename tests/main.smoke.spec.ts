@@ -1,5 +1,4 @@
 import { expect, test } from '@playwright/test';
-import { generateUniqueEmail } from '../src/helpers/testDataHelper';
 import { DocsPage } from '../src/pages/docs.page';
 import { HomePage } from '../src/pages/home.page';
 import { LoginPage } from '../src/pages/login.page';
@@ -55,22 +54,5 @@ test(
     await registerPage.goto();
 
     await expect(registerPage.subtitle).toHaveText(expectedSubtitle);
-  }
-);
-
-test(
-  'should successfully register a new user',
-  { tag: ['@auth', '@smoke', '@registration'] },
-  async ({ page }) => {
-    const registerPage = new RegisterPage(page);
-    const email = generateUniqueEmail();
-    const displayName = 'Test User';
-    const password = 'Test123!';
-
-    await registerPage.goto();
-    await registerPage.register(email, password, displayName);
-
-    await expect(registerPage.successMessage).toBeVisible();
-    await expect(page).toHaveURL(/.*\/login\.html/);
   }
 );
