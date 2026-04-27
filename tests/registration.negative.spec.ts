@@ -21,31 +21,32 @@ test.describe('Registration Negative Tests', () => {
     }
   );
 
-  test(
-    'should show validation error for invalid emails',
-    { tag: ['@auth', '@negative', '@registration'] },
-    async () => {
-      const invalidEmails = [
-        'invalid-email',
-        'test@',
-        '@example.com',
-        'test@example',
-        'test@.com',
-        'test @example.com',
-      ];
+  const invalidEmailTestCases = [
+    'invalid-email',
+    'test@',
+    '@example.com',
+    'test@example',
+    'test@.com',
+    'test @example.com',
+  ];
 
-      await registerPage.passwordInput.fill('password123');
+  for (const email of invalidEmailTestCases) {
+    test(
+      `should show validation error for invalid email: ${email}`,
+      { tag: ['@auth', '@negative', '@registration'] },
+      async ({ page }) => {
+        const registerPage = new RegisterPage(page);
+        await registerPage.goto();
 
-      for (const email of invalidEmails) {
-        await registerPage.emailInput.clear();
         await registerPage.emailInput.fill(email);
+        await registerPage.passwordInput.fill('password123');
         await registerPage.submitButton.click();
 
         await expect(registerPage.errorAlert).toHaveText('Please enter a valid email address');
         await expect(registerPage.successMessage).not.toBeVisible();
       }
-    }
-  );
+    );
+  }
 
   test(
     'should show validation error for password less than 3 characters',
@@ -68,7 +69,9 @@ test.describe('Registration Negative Tests', () => {
       await registerPage.passwordInput.fill('password123');
       await registerPage.submitButton.click();
 
-      await expect(registerPage.errorAlert).toHaveText('Display name must be at least 3 characters');
+      await expect(registerPage.errorAlert).toHaveText(
+        'Display name must be at least 3 characters'
+      );
     }
   );
 
