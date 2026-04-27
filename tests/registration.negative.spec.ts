@@ -16,40 +16,34 @@ test.describe('Registration Negative Tests', () => {
     async () => {
       await registerPage.submitButton.click();
 
-      const emailValidationMessage = await registerPage.emailInput.evaluate(
-        (el: HTMLInputElement) => el.validationMessage
-      );
-      expect(emailValidationMessage).toBeTruthy();
+      await expect(registerPage.emailInput).toBeFocused();
+      await expect(registerPage.successMessage).not.toBeVisible();
     }
   );
 
   test(
-    'should show validation error for invalid email without @',
+    'should show validation error for invalid emails',
     { tag: ['@auth', '@negative', '@registration'] },
     async () => {
-      await registerPage.emailInput.fill('invalid-email');
+      const invalidEmails = [
+        'invalid-email',
+        'test@',
+        '@example.com',
+        'test@example',
+        'test@.com',
+        'test @example.com',
+      ];
+
       await registerPage.passwordInput.fill('password123');
-      await registerPage.submitButton.click();
 
-      const emailValidationMessage = await registerPage.emailInput.evaluate(
-        (el: HTMLInputElement) => el.validationMessage
-      );
-      expect(emailValidationMessage).toContain('@');
-    }
-  );
+      for (const email of invalidEmails) {
+        await registerPage.emailInput.clear();
+        await registerPage.emailInput.fill(email);
+        await registerPage.submitButton.click();
 
-  test(
-    'should show validation error for email with spaces',
-    { tag: ['@auth', '@negative', '@registration'] },
-    async () => {
-      await registerPage.emailInput.fill('test user@example.com');
-      await registerPage.passwordInput.fill('password123');
-      await registerPage.submitButton.click();
-
-      const emailValidationMessage = await registerPage.emailInput.evaluate(
-        (el: HTMLInputElement) => el.validationMessage
-      );
-      expect(emailValidationMessage).toBeTruthy();
+        await expect(registerPage.errorAlert).toHaveText('Please enter a valid email address');
+        await expect(registerPage.successMessage).not.toBeVisible();
+      }
     }
   );
 
@@ -61,10 +55,7 @@ test.describe('Registration Negative Tests', () => {
       await registerPage.passwordInput.fill('ab');
       await registerPage.submitButton.click();
 
-      const passwordValidationMessage = await registerPage.passwordInput.evaluate(
-        (el: HTMLInputElement) => el.validationMessage
-      );
-      expect(passwordValidationMessage).toBeTruthy();
+      await expect(registerPage.errorAlert).toHaveText('Password must be at least 3 characters');
     }
   );
 
@@ -77,10 +68,7 @@ test.describe('Registration Negative Tests', () => {
       await registerPage.passwordInput.fill('password123');
       await registerPage.submitButton.click();
 
-      const displayNameValidationMessage = await registerPage.displayNameInput.evaluate(
-        (el: HTMLInputElement) => el.validationMessage
-      );
-      expect(displayNameValidationMessage).toBeTruthy();
+      await expect(registerPage.errorAlert).toHaveText('Display name must be at least 3 characters');
     }
   );
 
