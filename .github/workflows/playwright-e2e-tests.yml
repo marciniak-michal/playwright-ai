@@ -1,9 +1,7 @@
 name: Playwright Tests
 
 on:
-  push:
-    branches:
-      - feat/github-actions
+  pull_request:
 
 jobs:
   test:
