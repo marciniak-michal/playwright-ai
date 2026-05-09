@@ -4,7 +4,7 @@
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit"
   },
-  "cSpell.userWords": ["Rolnopol"],
+  "cSpell.userWords": ["Rolnopol", "jaktestowac", "nvmrc"],
   "terminal.integrated.defaultProfile.windows": "Git Bash",
   "chat.tools.terminal.autoApprove": {
     "git add": true,
