@@ -61,6 +61,21 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
 
+      - name: Wait for rolnopol service
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:3000/api/v1/healthcheck >/dev/null; then
+              echo "rolnopol is ready"
+              exit 0
+            fi
+
+            echo "waiting for rolnopol... ($i)"
+            sleep 2
+          done
+
+          echo "rolnopol failed to become ready in time" >&2
+          exit 1
+
       - name: Run smoke tests
         run: npx playwright test --grep @smoke --project=${{ matrix.browser }}
 
