@@ -64,10 +64,10 @@ jobs:
       - name: Run smoke tests
         run: npx playwright test --grep @smoke --project=${{ matrix.browser }}
 
-      - name: Upload Playwright report
-        if: always()
+      - name: Upload Playwright artifacts
+        if: ${{ success() || failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.browser }}
+          name: ${{ github.run_id }}-${{ github.run_attempt }}-playwright-report
           path: playwright-report/
           retention-days: 7
