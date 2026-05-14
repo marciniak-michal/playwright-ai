@@ -63,18 +63,8 @@ jobs:
 
       - name: Wait for rolnopol service
         run: |
-          for i in {1..30}; do
-            if curl -fsS http://localhost:3000/api/v1/healthcheck >/dev/null; then
-              echo "rolnopol is ready"
-              exit 0
-            fi
-
-            echo "waiting for rolnopol... ($i)"
-            sleep 2
-          done
-
-          echo "rolnopol failed to become ready in time" >&2
-          exit 1
+          timeout 10s bash -c 'until curl -fsS http://localhost:3000/api/v1/healthcheck >/dev/null 2>&1; do sleep 1; done'
+          echo "rolnopol is ready"
 
       - name: Run smoke tests
         run: npx playwright test --grep @smoke --project=${{ matrix.browser }}
