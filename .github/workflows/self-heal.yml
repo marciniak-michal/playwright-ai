@@ -1,0 +1,77 @@
+name: Self-Heal Tests
+
+on:
+  # Automatically triggered when the main test workflow fails.
+  workflow_run:
+    workflows: ['Playwright Tests']
+    types: [completed]
+  # Can also be triggered manually (useful for local testing of the pipeline).
+  workflow_dispatch:
+    inputs:
+      browser:
+        description: 'Browser artifact to heal (matches the matrix value in the test workflow)'
+        required: false
+        default: 'chromium'
+
+concurrency:
+  group: self-heal-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  self-heal:
+    # Only run when the triggering workflow actually failed, or on manual dispatch.
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: write # push heal branch
+      pull-requests: write # open PR
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Use a PAT so the PR created here triggers the test workflow.
+          # Fall back to GITHUB_TOKEN (PR won't auto-trigger CI in that case).
+          token: ${{ secrets.HEAL_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Resolve browser name
+        id: browser
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "name=${{ inputs.browser }}" >> $GITHUB_OUTPUT
+          else
+            echo "name=chromium" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download failures artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: test-failures-${{ steps.browser.outputs.name }}
+          path: test-results/
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run self-healing agent
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.HEAL_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          BASE_BRANCH: ${{ github.event.repository.default_branch || 'master' }}
+        run: npx tsx scripts/heal.ts
