@@ -10,10 +10,17 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 4 : undefined,
-  reporter: [['html', { open: 'never' }], ['line'], ['github']],
+  reporter: [
+    ['html', { open: 'never' }],
+    ['json', { outputFile: 'test-results/results.json' }],
+    ['./src/reporters/failure-reporter'],
+    ['line'],
+    ['github'],
+  ],
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
   },
   projects: [
     {

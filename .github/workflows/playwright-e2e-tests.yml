@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}  
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   test:
@@ -49,9 +49,7 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.pw-version.outputs.version }}
-          restore-keys: |
-            playwright-${{ runner.os }}-${{ steps.pw-version.outputs.version }}
-            playwright-${{ runner.os }}-
+          restore-keys: playwright-${{ runner.os }}-
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -64,10 +62,18 @@ jobs:
       - name: Run smoke tests
         run: npx playwright test --grep @smoke --project=${{ matrix.browser }}
 
-      - name: Upload Playwright report
-        if: always()
+      - name: Upload test failures artifact
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report-${{ matrix.browser }}
+          name: test-failures-${{ matrix.browser }}
+          path: test-results/failures.json
+          retention-days: 1
+
+      - name: Upload Playwright report
+        if: ${{ success() || failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: playwright-report/
-          retention-days: 7
+          retention-days: 14
