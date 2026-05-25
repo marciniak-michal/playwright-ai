@@ -3,10 +3,6 @@
  *
  * Usage:
  *   OPENAI_API_KEY=sk-... npx tsx scripts/heal.ts
- *
- * For PR creation also set:
- *   GITHUB_TOKEN=ghp_...
- *   GITHUB_REPOSITORY=owner/repo
  */
 import { execSync } from 'child_process';
 import fs from 'fs';
@@ -44,6 +40,10 @@ async function callAi(context: HealingContext): Promise<AiResponse> {
           .join('\n\n')
       : '_No page objects found._';
 
+  const domTreeSection = context.failure.domTree
+    ? `## Page DOM Tree at Failure\n\`\`\`json\n${JSON.stringify(context.failure.domTree, null, 2)}\n\`\`\``
+    : '';
+
   const prompt = `You are a Playwright test repair agent.
 A test has failed, most likely because the UI changed (e.g. a locator selector, test-id, or visible text is now different).
 
@@ -62,10 +62,14 @@ ${context.failure.errorMessage}
 ${context.failure.errorStack}
 \`\`\`
 
+## DOM Tree
+${domTreeSection}
+
 ## Rules
 - Only fix locators, text values, or selectors directly related to the reported error.
 - Do NOT change test logic, add comments, or refactor anything unrelated to the failure.
 - Follow the Page Object Pattern: locators belong in page object files; assertions stay in test files.
+- If the DOM tree is provided, use it to identify the correct selector, text, or structure that replaced what the test was looking for.
 - Return ONLY valid JSON matching this exact schema — no markdown, no explanation outside JSON:
 
 {
