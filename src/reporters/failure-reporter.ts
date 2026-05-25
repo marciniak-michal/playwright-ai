@@ -12,6 +12,8 @@ export interface FailureRecord {
   screenshotPath?: string;
   tracePath?: string;
   tags: string[];
+  /** Simplified DOM tree of the page captured at the moment of failure. */
+  domTree?: Record<string, unknown>;
 }
 
 class FailureReporter implements Reporter {
@@ -23,11 +25,26 @@ class FailureReporter implements Reporter {
   }
 
   onTestEnd(test: TestCase, result: TestResult): void {
-    if (result.status !== 'failed') return;
+    if (result.status !== 'failed' && result.status !== 'timedOut') return;
 
     const error = result.errors[0];
     const screenshot = result.attachments.find((a) => a.name === 'screenshot');
     const trace = result.attachments.find((a) => a.name === 'trace');
+    const domTreeAttachment = result.attachments.find((a) => a.name === 'dom-tree');
+
+    let domTree: Record<string, unknown> | undefined;
+    if (domTreeAttachment) {
+      try {
+        const raw = domTreeAttachment.body
+          ? domTreeAttachment.body.toString('utf-8')
+          : domTreeAttachment.path
+            ? fs.readFileSync(domTreeAttachment.path, 'utf-8')
+            : undefined;
+        if (raw) domTree = JSON.parse(raw) as Record<string, unknown>;
+      } catch {
+        // Malformed attachment — skip
+      }
+    }
 
     this.failures.push({
       testTitle: test.title,
@@ -38,6 +55,7 @@ class FailureReporter implements Reporter {
       screenshotPath: screenshot?.path,
       tracePath: trace?.path,
       tags: test.tags,
+      domTree,
     });
   }
 
