@@ -9,8 +9,6 @@ export interface FailureRecord {
   testLine: number;
   errorMessage: string;
   errorStack: string;
-  screenshotPath?: string;
-  tracePath?: string;
   tags: string[];
   /** Simplified DOM tree of the page captured at the moment of failure. */
   domTree?: Record<string, unknown>;
@@ -28,8 +26,6 @@ class FailureReporter implements Reporter {
     if (result.status !== 'failed' && result.status !== 'timedOut') return;
 
     const error = result.errors[0];
-    const screenshot = result.attachments.find((a) => a.name === 'screenshot');
-    const trace = result.attachments.find((a) => a.name === 'trace');
     const domTreeAttachment = result.attachments.find((a) => a.name === 'dom-tree');
 
     let domTree: Record<string, unknown> | undefined;
@@ -52,8 +48,6 @@ class FailureReporter implements Reporter {
       testLine: test.location.line,
       errorMessage: error?.message ?? '',
       errorStack: error?.stack ?? '',
-      screenshotPath: screenshot?.path,
-      tracePath: trace?.path,
       tags: test.tags,
       domTree,
     });

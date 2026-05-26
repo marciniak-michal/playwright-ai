@@ -25,6 +25,8 @@ export const test = base.extend<{ _domCapture: void }>({
         try {
           const domTree = await page.evaluate(
             ({ skipTags, capturedAttrs, maxDepth, maxTextLength }) => {
+              const skipTagSet = new Set(skipTags);
+
               interface DomNode {
                 tag: string;
                 [attr: string]: unknown;
@@ -33,7 +35,7 @@ export const test = base.extend<{ _domCapture: void }>({
               }
 
               function buildNode(el: Element, depth: number): DomNode | null {
-                if (depth > maxDepth || skipTags.has(el.tagName.toLowerCase())) return null;
+                if (depth > maxDepth || skipTagSet.has(el.tagName.toLowerCase())) return null;
 
                 const node: DomNode = { tag: el.tagName.toLowerCase() };
 
