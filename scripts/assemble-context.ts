@@ -69,6 +69,6 @@ export function assembleContexts(failuresPath: string): HealingContext[] {
       source: fs.readFileSync(absPath, 'utf-8'),
     }));
 
-    return { failure, testSource, pageObjects };
+    return { failure, testSource, pageObjects } as HealingContext;
   });
 }

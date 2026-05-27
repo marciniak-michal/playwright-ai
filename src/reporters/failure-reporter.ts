@@ -9,6 +9,7 @@ export interface FailureRecord {
   testLine: number;
   errorMessage: string;
   errorStack: string;
+  errorLine: number;
   tags: string[];
   /** Simplified DOM tree of the page captured at the moment of failure. */
   domTree?: Record<string, unknown>;
@@ -48,6 +49,7 @@ class FailureReporter implements Reporter {
       testLine: test.location.line,
       errorMessage: error?.message ?? '',
       errorStack: error?.stack ?? '',
+      errorLine: error?.location?.line ?? 0,
       tags: test.tags,
       domTree,
     });
@@ -59,9 +61,6 @@ class FailureReporter implements Reporter {
     const dir = path.dirname(this.outputFile);
     fs.mkdirSync(dir, { recursive: true });
     fs.writeFileSync(this.outputFile, JSON.stringify(this.failures, null, 2));
-    console.log(
-      `\n[FailureReporter] ${this.failures.length} failure(s) written to ${this.outputFile}`
-    );
   }
 }
 

@@ -60,9 +60,10 @@ ${pageObjectsSection}
 \`\`\`
 ${context.failure.errorMessage}
 ${context.failure.errorStack}
+${context.failure.errorLine}
 \`\`\`
 
-## DOM Tree
+## DOM Tree at Failure
 ${domTreeSection}
 
 ## Rules
