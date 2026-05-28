@@ -8,8 +8,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import OpenAI from 'openai';
 import path from 'path';
-import type { HealingContext } from './assemble-context';
-import { assembleContexts } from './assemble-context';
+import type { HealingContext } from '../src/reporters/failure-reporter';
 
 const FAILURES_PATH = 'test-results/failures.json';
 const BACKUP_DIR = '.heal-backup';
@@ -40,8 +39,8 @@ async function callAi(context: HealingContext): Promise<AiResponse> {
           .join('\n\n')
       : '_No page objects found._';
 
-  const domTreeSection = context.failure.domTree
-    ? `## Page DOM Tree at Failure\n\`\`\`json\n${JSON.stringify(context.failure.domTree, null, 2)}\n\`\`\``
+  const domTreeSection = context.domTree
+    ? `## Page DOM Tree at Failure\n\`\`\`json\n${JSON.stringify(context.domTree, null, 2)}\n\`\`\``
     : '';
 
   const prompt = `You are a Playwright test repair agent.
@@ -49,7 +48,7 @@ A test has failed, most likely because the UI changed (e.g. a locator selector, 
 
 Your task: identify what changed and return the corrected TypeScript source for the affected file(s).
 
-## Failing Test: ${context.failure.testFile} (line ${context.failure.testLine})
+## Failing Test: ${context.testFile} (line ${context.testLine})
 \`\`\`typescript
 ${context.testSource}
 \`\`\`
@@ -58,12 +57,10 @@ ${pageObjectsSection}
 
 ## Error
 \`\`\`
-${context.failure.errorMessage}
-${context.failure.errorStack}
-${context.failure.errorLine}
+${context.errorMessage}
+${context.errorLine}
 \`\`\`
 
-## DOM Tree at Failure
 ${domTreeSection}
 
 ## Rules
@@ -207,7 +204,8 @@ async function main(): Promise<void> {
     throw new Error('OPENAI_API_KEY environment variable is required.');
   }
 
-  const contexts = assembleContexts(FAILURES_PATH);
+  const contexts = JSON.parse(fs.readFileSync(FAILURES_PATH, 'utf-8')) as HealingContext[];
+  
   if (contexts.length === 0) {
     console.log('[heal] failures.json is empty — nothing to heal.');
     return;
@@ -219,14 +217,14 @@ async function main(): Promise<void> {
   const analyses: string[] = [];
 
   for (const ctx of contexts) {
-    console.log(`\n[heal] Analysing: "${ctx.failure.testTitle}"`);
+    console.log(`\n[heal] Analysing: "${ctx.testTitle}"`);
     try {
       const result = await callAi(ctx);
       console.log(`[heal] AI analysis: ${result.analysis}`);
       allFixes.push(...result.fixes);
       analyses.push(result.analysis);
     } catch (err) {
-      console.error(`[heal] AI call failed for "${ctx.failure.testTitle}":`, err);
+      console.error(`[heal] AI call failed for "${ctx.testTitle}":`, err);
     }
   }
 

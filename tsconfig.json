@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
-    "types": ["node"]
+    "types": ["node"],
+    "moduleResolution": "bundler",
+    "ignoreDeprecations": "6.0"
   }
 }

@@ -1,19 +1,10 @@
 import { test as base } from '@playwright/test';
 
 const SKIP_TAGS = new Set(['script', 'style', 'noscript', 'template', 'svg', 'path', 'defs']);
-const CAPTURED_ATTRS = [
-  'id',
-  'class',
-  'data-testid',
-  'aria-label',
-  'role',
-  'name',
-  'type',
-  'placeholder',
-  'href',
-];
-const MAX_DEPTH = 8;
-const MAX_TEXT_LENGTH = 120;
+const CAPTURED_ATTRS = ['id', 'class', 'data-testid', 'role', 'name', 'type', 'href'];
+const MAX_DEPTH = 4;
+const MAX_CHILDREN = 5;
+const MAX_TEXT_LENGTH = 50;
 
 /** Playwright auto-fixture that attaches a simplified DOM tree to every failing test. */
 export const test = base.extend<{ _domCapture: void }>({
@@ -24,7 +15,7 @@ export const test = base.extend<{ _domCapture: void }>({
       if (testInfo.status === 'failed' || testInfo.status === 'timedOut') {
         try {
           const domTree = await page.evaluate(
-            ({ skipTags, capturedAttrs, maxDepth, maxTextLength }) => {
+            ({ skipTags, capturedAttrs, maxDepth, maxChildren, maxTextLength }) => {
               const skipTagSet = new Set(skipTags);
 
               interface DomNode {
@@ -45,6 +36,7 @@ export const test = base.extend<{ _domCapture: void }>({
                 }
 
                 const childNodes = Array.from(el.children)
+                  .slice(0, maxChildren)
                   .map((child) => buildNode(child, depth + 1))
                   .filter((c): c is DomNode => c !== null);
 
@@ -64,6 +56,7 @@ export const test = base.extend<{ _domCapture: void }>({
               skipTags: [...SKIP_TAGS],
               capturedAttrs: CAPTURED_ATTRS,
               maxDepth: MAX_DEPTH,
+              maxChildren: MAX_CHILDREN,
               maxTextLength: MAX_TEXT_LENGTH,
             }
           );

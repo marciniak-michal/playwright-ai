@@ -2,21 +2,55 @@ import type { Reporter, TestCase, TestResult } from '@playwright/test/reporter';
 import fs from 'fs';
 import path from 'path';
 
-export interface FailureRecord {
+export interface PageObjectSource {
+  filePath: string;
+  source: string;
+}
+
+export interface HealingContext {
   testTitle: string;
   /** Workspace-relative path to the test file (forward slashes). */
   testFile: string;
   testLine: number;
   errorMessage: string;
-  errorStack: string;
   errorLine: number;
   tags: string[];
   /** Simplified DOM tree of the page captured at the moment of failure. */
   domTree?: Record<string, unknown>;
+  testSource: string;
+  pageObjects: PageObjectSource[];
 }
 
+function extractPageObjectPaths(source: string, fromFile: string): string[] {
+  const importRegex = /from\s+['"]([^'"]+)['"]/g;
+  const dir = path.dirname(fromFile);
+  const found = new Set<string>();
+
+  let match: RegExpExecArray | null;
+  while ((match = importRegex.exec(source)) !== null) {
+    const specifier = match[1];
+    if (!specifier.startsWith('.')) continue;
+
+    const candidates = [
+      path.resolve(dir, specifier + '.ts'),
+      path.resolve(dir, specifier, 'index.ts'),
+    ];
+
+    for (const candidate of candidates) {
+      if (fs.existsSync(candidate) && candidate.split(path.sep).includes('pages')) {
+        found.add(candidate);
+        break;
+      }
+    }
+  }
+
+  return [...found];
+}
+
+type FailureEntry = Omit<HealingContext, 'testSource' | 'pageObjects'>;
+
 class FailureReporter implements Reporter {
-  private failures: FailureRecord[] = [];
+  private failures: FailureEntry[] = [];
   private readonly outputFile: string;
 
   constructor(options?: { outputFile?: string }) {
@@ -48,7 +82,6 @@ class FailureReporter implements Reporter {
       testFile: path.relative(process.cwd(), test.location.file).replace(/\\/g, '/'),
       testLine: test.location.line,
       errorMessage: error?.message ?? '',
-      errorStack: error?.stack ?? '',
       errorLine: error?.location?.line ?? 0,
       tags: test.tags,
       domTree,
@@ -60,7 +93,21 @@ class FailureReporter implements Reporter {
 
     const dir = path.dirname(this.outputFile);
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(this.outputFile, JSON.stringify(this.failures, null, 2));
+
+    const contexts: HealingContext[] = this.failures.map((failure) => {
+      const testFilePath = path.resolve(process.cwd(), failure.testFile);
+      const testSource = fs.readFileSync(testFilePath, 'utf-8');
+
+      const pageObjectPaths = extractPageObjectPaths(testSource, testFilePath);
+      const pageObjects: PageObjectSource[] = pageObjectPaths.map((absPath) => ({
+        filePath: path.relative(process.cwd(), absPath).replace(/\\/g, '/'),
+        source: fs.readFileSync(absPath, 'utf-8'),
+      }));
+
+      return { ...failure, testSource, pageObjects } as HealingContext;
+    });
+
+    fs.writeFileSync(this.outputFile, JSON.stringify(contexts, null, 2));
   }
 }
 
