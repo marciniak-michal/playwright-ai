@@ -11,7 +11,7 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
     strategy:
       fail-fast: true
       matrix:
@@ -24,9 +24,10 @@ jobs:
           - 3000:3000
         options: >-
           --health-cmd "wget -qO- http://localhost:3000 || exit 1"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 2
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 1
+          --health-start-period 10s
 
     steps:
       - name: Checkout code
@@ -41,16 +42,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Get Playwright version
-        id: pw-version
-        run: echo "version=$(npm ls @playwright/test --json | jq -r '.dependencies["@playwright/test"].version')" >> $GITHUB_OUTPUT
-
       - name: Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ steps.pw-version.outputs.version }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
