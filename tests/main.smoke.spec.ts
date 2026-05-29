@@ -18,7 +18,7 @@ test(
 );
 
 test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ page }) => {
-  const expectedSubtitle = 'User Login & Account Access xddd';
+  const expectedSubtitle = 'User Login & Account Access';
   const loginPage = new LoginPage(page);
 
   await loginPage.goto();
