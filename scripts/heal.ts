@@ -115,6 +115,26 @@ function applyFixes(fixes: AiFix[]): string[] {
   return changed;
 }
 
+// ─── Verification ───────────────────────────────────────────────────────────
+
+/**
+ * Re-runs only the previously-failing test files to confirm the fixes work.
+ * Returns true when all targeted tests pass, false otherwise.
+ */
+function verifyFixes(testFiles: string[]): boolean {
+  const unique = [...new Set(testFiles)];
+  const fileArgs = unique.map((f) => `"${f}"`).join(' ');
+  console.log(`\n[heal] Verifying fixes — running: ${unique.join(', ')}`);
+  try {
+    execSync(`npx playwright test ${fileArgs} --reporter=line`, { stdio: 'inherit' });
+    console.log('[heal] Verification passed — all fixed tests are green.');
+    return true;
+  } catch {
+    console.log('[heal] Verification failed — tests still failing, skipping commit.');
+    return false;
+  }
+}
+
 // ─── Git ──────────────────────────────────────────────────────────────────────
 
 function exec(cmd: string): void {
@@ -216,6 +236,7 @@ async function main(): Promise<void> {
 
   const allFixes: AiFix[] = [];
   const analyses: string[] = [];
+  const failingTestFiles = contexts.map((ctx) => ctx.testFile);
 
   for (const ctx of contexts) {
     console.log(`\n[heal] Analysing: "${ctx.testTitle}"`);
@@ -237,6 +258,10 @@ async function main(): Promise<void> {
   const changedFiles = applyFixes(allFixes);
   if (changedFiles.length === 0) {
     console.log('[heal] No files were updated.');
+    return;
+  }
+
+  if (!verifyFixes(failingTestFiles)) {
     return;
   }
 
