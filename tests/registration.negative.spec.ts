@@ -42,7 +42,7 @@ test.describe('Registration Negative Tests', () => {
         await registerPage.passwordInput.fill('password123');
         await registerPage.submitButton.click();
 
-        await expect(registerPage.errorAlert).toHaveText('Please enter a valid email address');
+        await expect(registerPage.errorAlert).toHaveText('Pleqwrqrwease enter a TEST valid email address');
         await expect(registerPage.successMessage).not.toBeVisible();
       }
     );
@@ -56,7 +56,7 @@ test.describe('Registration Negative Tests', () => {
       await registerPage.passwordInput.fill('ab');
       await registerPage.submitButton.click();
 
-      await expect(registerPage.errorAlert).toHaveText('Password must be at least 3 characters');
+      await expect(registerPage.errorAlert).not.toHaveText('Password must be at least 3 characters');
     }
   );
 

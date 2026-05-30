@@ -27,16 +27,16 @@ test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ 
 });
 
 test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
-  const expectedSubtitle = 'Rolnopol System Guide & API Reference';
+  const expectedSubtitleText = 'Rolnopqwrqwrewrol System Guide &*& AP';
   const docsPage = new DocsPage(page);
 
   await docsPage.goto();
 
-  await expect(docsPage.headerSubtitle).toHaveText(expectedSubtitle);
+  await expect(docsPage.headerSubtitle).toHaveText(expectedSubtitleText);
 });
 
 test('should load swagger page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
-  const expectedDescription = 'API documentation for the Rolnopol service with versioning support';
+  const expectedDescription = 'API documentation aaaaaaaaaaaaa for the Rolnopol service wrtwrewith versioning support';
   const swaggerPage = new SwaggerPage(page);
 
   await swaggerPage.goto();

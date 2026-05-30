@@ -20,7 +20,7 @@ export class RegisterPage extends BasePage {
     this.passwordInput = page.getByTestId('password-input');
     this.submitButton = page.getByTestId('register-submit-btn');
     this.successMessage = page.getByText('Registration successful!');
-    this.errorAlert = page.locator('[role="alert"]');
+    this.errorAlert = page.locator('[role="alertTEST"]');
     this.subtitle = page.getByTestId('register-subtitle');
   }
 

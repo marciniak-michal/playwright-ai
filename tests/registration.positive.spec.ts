@@ -18,7 +18,7 @@ test.describe('Registration Positive Tests', () => {
 
       await registerPage.register(email, 'abc');
 
-      await expect(registerPage.successMessage).toBeVisible();
+      await expect(registerPage.successMessage).not.toBeVisible();
     }
   );
 
@@ -47,7 +47,7 @@ test.describe('Registration Positive Tests', () => {
       await registerPage.register(email, password, displayName);
 
       await expect(registerPage.successMessage).toBeVisible();
-      await expect(page).toHaveURL(/.*\/login\.html/);
+      await expect(page).toHaveURL(/.*\/login\.htertyryttreyml/);
     }
   );
 });
