@@ -11,7 +11,6 @@ import path from 'path';
 import type { HealingContext } from '../src/reporters/failure-reporter';
 
 const FAILURES_PATH = 'test-results/failures.json';
-const BACKUP_DIR = '.heal-backup';
 const OPENAI_MODEL = process.env.OPENAI_MODEL ?? 'gpt-5.4-mini';
 const BASE_BRANCH = process.env.BASE_BRANCH ?? 'master';
 
@@ -89,15 +88,6 @@ ${domTreeSection}
   return JSON.parse(content) as AiResponse;
 }
 
-// ─── File patching ────────────────────────────────────────────────────────────
-
-function backupFile(relativePath: string): void {
-  const src = path.resolve(process.cwd(), relativePath);
-  const dest = path.join(BACKUP_DIR, relativePath);
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-  fs.copyFileSync(src, dest);
-}
-
 /**
  * Applies AI-suggested fixes to disk.
  * Returns the list of relative file paths that were actually changed.
@@ -118,7 +108,6 @@ function applyFixes(fixes: AiFix[]): string[] {
       console.warn(`[heal] Skipping unknown file: ${relativePath}`);
       continue;
     }
-    backupFile(relativePath);
     fs.writeFileSync(absPath, fix.newContent, 'utf-8');
     console.log(`[heal] Fixed: ${relativePath}`);
     changed.push(relativePath);
@@ -139,11 +128,23 @@ function createHealBranch(): string {
   return branch;
 }
 
-function commitAndPush(changedFiles: string[], branch: string): void {
+function commitAndPush(changedFiles: string[], branch: string): boolean {
   const quoted = changedFiles.map((f) => `"${f}"`).join(' ');
+  console.log(`[git] ${quoted} staged for commit`);
   exec(`git add ${quoted}`);
+
+  // git diff --cached --quiet exits 0 when nothing is staged, 1 when there are staged changes.
+  try {
+    execSync('git diff --cached --quiet', { stdio: 'pipe' });
+    console.log('[heal] No staged changes — files already match the committed state.');
+    return false;
+  } catch {
+    // staged changes exist — proceed
+  }
+
   exec(`git commit -m "fix(self-heal): auto-fix failing tests"`);
   exec(`git push origin ${branch}`);
+  return true;
 }
 
 // ─── GitHub PR ────────────────────────────────────────────────────────────────
@@ -205,7 +206,7 @@ async function main(): Promise<void> {
   }
 
   const contexts = JSON.parse(fs.readFileSync(FAILURES_PATH, 'utf-8')) as HealingContext[];
-  
+
   if (contexts.length === 0) {
     console.log('[heal] failures.json is empty — nothing to heal.');
     return;
@@ -240,7 +241,11 @@ async function main(): Promise<void> {
   }
 
   const branch = createHealBranch();
-  commitAndPush(changedFiles, branch);
+  const committed = commitAndPush(changedFiles, branch);
+  if (!committed) {
+    console.log('[heal] Nothing committed — skipping PR creation.');
+    return;
+  }
   await createPullRequest(branch, analyses);
 
   console.log('\n[heal] Done.');
