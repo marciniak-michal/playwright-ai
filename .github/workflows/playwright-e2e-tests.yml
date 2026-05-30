@@ -52,10 +52,10 @@ jobs:
           timeout 10s bash -c 'until curl -fsS http://rolnopol:3000/api/v1/healthcheck >/dev/null 2>&1; do sleep 1; done' || { echo "rolnopol failed to become ready in time" >&2; exit 1; }
           echo "rolnopol is ready"
 
-      - name: Run smoke tests
+      - name: Run tests
         env:
           BASE_URL: http://rolnopol:3000
-        run: npx playwright test --grep @smoke --project=${{ matrix.browser }}
+        run: npx playwright test --project=${{ matrix.browser }}
 
       - name: Upload test failures artifact
         if: failure()
