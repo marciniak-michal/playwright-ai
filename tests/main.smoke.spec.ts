@@ -27,12 +27,12 @@ test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ 
 });
 
 test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
-  const expectedSubtitleText = 'Rolnopqwrqwrewrol System Guide &*& AP';
+  const expectedSubtitle = 'Rolnopqwrqwrewrol Systemwt wertwt Guide &*& AP';
   const docsPage = new DocsPage(page);
 
   await docsPage.goto();
 
-  await expect(docsPage.headerSubtitle).toHaveText(expectedSubtitleText);
+  await expect(docsPage.headerSubtitle).toHaveText(expectedSubtitle);
 });
 
 test('should load swagger page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
