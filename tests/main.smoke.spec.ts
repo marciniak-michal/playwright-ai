@@ -18,13 +18,12 @@ test(
 );
 
 test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ page }) => {
-  const expectedSubtitleText = 'User TESTLogin & Accou Acs';
-  console.log(expectedSubtitleText);
+  const expectedSubtitle = 'User Login & Account Access';
   const loginPage = new LoginPage(page);
 
   await loginPage.goto();
 
-  await expect(loginPage.subtitle).toHaveText(expectedSubtitleText);
+  await expect(loginPage.subtitle).toHaveText(expectedSubtitle);
 });
 
 test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {

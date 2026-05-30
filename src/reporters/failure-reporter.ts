@@ -50,7 +50,7 @@ function extractPageObjectPaths(source: string, fromFile: string): string[] {
 type FailureEntry = Omit<HealingContext, 'testSource' | 'pageObjects'>;
 
 class FailureReporter implements Reporter {
-  private failures: FailureEntry[] = [];
+  private failures = new Map<string, FailureEntry>();
   private readonly outputFile: string;
 
   constructor(options?: { outputFile?: string }) {
@@ -77,7 +77,7 @@ class FailureReporter implements Reporter {
       }
     }
 
-    this.failures.push({
+    this.failures.set(test.id, {
       testTitle: test.title,
       testFile: path.relative(process.cwd(), test.location.file).replace(/\\/g, '/'),
       testLine: test.location.line,
@@ -89,12 +89,12 @@ class FailureReporter implements Reporter {
   }
 
   onEnd(): void {
-    if (this.failures.length === 0) return;
+    if (this.failures.size === 0) return;
 
     const dir = path.dirname(this.outputFile);
     fs.mkdirSync(dir, { recursive: true });
 
-    const contexts: HealingContext[] = this.failures.map((failure) => {
+    const contexts: HealingContext[] = [...this.failures.values()].map((failure) => {
       const testFilePath = path.resolve(process.cwd(), failure.testFile);
       const testSource = fs.readFileSync(testFilePath, 'utf-8');
 
