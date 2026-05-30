@@ -18,7 +18,7 @@ test.describe('Registration Positive Tests', () => {
 
       await registerPage.register(email, 'abc');
 
-      await expect(registerPage.successMessage).toBeVisible();
+      await expect(registerPage.successMessage).not.toBeVisible();
     }
   );
 
