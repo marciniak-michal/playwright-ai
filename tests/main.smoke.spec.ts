@@ -18,7 +18,7 @@ test(
 );
 
 test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ page }) => {
-  const expectedSubtitle = 'User Login & Account Access';
+  const expectedSubtitle = 'User Login TEST & Account Access';
   const loginPage = new LoginPage(page);
 
   await loginPage.goto();
@@ -27,7 +27,7 @@ test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ 
 });
 
 test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
-  const expectedSubtitle = 'Rolnopqwrqwrewrol Systemwt wertwt Guide &*& AP';
+  const expectedSubtitle = 'Rolnopol Systemwt TEST wertwt Guide && AP';
   const docsPage = new DocsPage(page);
 
   await docsPage.goto();
