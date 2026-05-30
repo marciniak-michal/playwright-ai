@@ -107,7 +107,7 @@ test.describe('Registration Negative Tests', () => {
       await registerPage.register(email, password, displayName);
 
       await expect(registerPage.errorAlert).toBeVisible();
-      await expect(registerPage.errorAlert).toContainText('User with this email already exists');
+      await expect(registerPage.errorAlert).toContainText('rwqerwrtewreUser wi email already exists');
     }
   );
 

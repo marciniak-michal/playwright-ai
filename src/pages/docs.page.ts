@@ -9,6 +9,6 @@ export class DocsPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.headerSubtitle = page.locator('.docs-header-subtitle');
+    this.headerSubtitle = page.locator('.docs-test-header-subtitwtrwetrle');
   }
 }
