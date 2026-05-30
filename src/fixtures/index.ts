@@ -50,7 +50,9 @@ export const test = base.extend<{ _domCapture: void }>({
                 return node;
               }
 
-              return document.body ? buildNode(document.body, 0) : null;
+              const bodyNode = document.body ? buildNode(document.body, 0) : null;
+              if (bodyNode) bodyNode.pageTitle = document.title || null;
+              return bodyNode;
             },
             {
               skipTags: [...SKIP_TAGS],

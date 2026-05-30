@@ -43,11 +43,12 @@ async function callAi(context: HealingContext): Promise<AiResponse> {
     : '';
 
   const prompt = `You are a Playwright test repair agent.
-A test has failed. There are three possible root causes — identify which applies and fix it:
+A test has failed. There are four possible root causes — identify which applies and fix it:
 
-1. **UI changed**: The application was updated and a locator, test-id, or visible text no longer matches what the test expects.
-2. **Test typo**: A developer introduced a typo or incorrect string in the test itself (e.g. an expected text constant like \`expectedSubtitle = 'UserwqefTEs Login & TEST werAcco'\` that clearly does not match what the real application shows). You can identify this by using the provided simplified DOM tree of the page at the time of failure, which includes the actual text/structure.
-3. **Wrong assertion logic**: The \`expect()\` call uses an incorrect matcher or negation (e.g. \`.not.toBeVisible()\` when the element is visible and the test should assert \`.toBeVisible()\`, or \`.toHaveText('x')\` when \`.not.toHaveText('x')\` was intended). Use the DOM tree and error message to determine what the page actually shows and whether the assertion logic is inverted or uses the wrong matcher.
+1. **UI changed**: A locator, test-id, or visible text no longer matches because the app was updated.
+2. **Test typo**: A wrong or garbled string in the test file (e.g. \`'UserwqefTEs Login'\`) that doesn't match what the DOM actually shows.
+3. **Wrong assertion logic**: The \`expect()\` matcher or \`.not\` negation is incorrect given what the page actually shows.
+4. **PageObject locator typo**: A locator in a page object is wrong (bad selector, wrong \`data-testid\`, etc.) even though the element exists in the DOM. Fix the locator in the page object only — do NOT touch the test file.
 
 Your task: identify the root cause and return the corrected TypeScript source for the affected file(s).
 
@@ -67,10 +68,12 @@ ${context.errorLine}
 \`\`\`
 
 ## Rules
-- Fix locators, text values, or selectors directly related to the reported error — whether the mismatch is caused by a UI change or a typo in the test.
+- Fix locators, text values, or selectors directly related to the reported error — whether the mismatch is caused by a UI change, a typo in the test, or a bad locator in a page object.
 - If the DOM tree is provided, treat the text/structure found in the DOM as the ground truth and update the test or page object to match it.
 - If expected text in the test looks garbled or nonsensical (e.g. random characters mixed in), treat it as a test typo and replace it with the actual value from the DOM.
 - If the assertion logic is incorrect (e.g. \`.not.toBeVisible()\` when the element is actually visible, or a wrong matcher like \`.toBeHidden()\` instead of \`.toBeVisible()\`), correct the matcher or remove/add the \`.not\` negation to reflect what the page actually shows.
+- If a locator in a page object file does not match any element in the DOM tree but the element clearly exists (e.g. the error is "locator not found" or "strict mode violation" and the DOM shows the element), treat it as a PageObject locator typo. Fix only the locator string in the page object file; do NOT touch the test file.
+- When fixing a locator, prefer the most stable selector available in the DOM: \`data-testid\` > ARIA role > visible label/text > CSS class. Do not invent selectors that are not present in the DOM tree.
 - Do NOT change test logic, add comments, or refactor anything unrelated to the failure.
 - Follow the Page Object Pattern: locators belong in page object files; assertions stay in test files.
 - Return ONLY valid JSON matching this exact schema — no markdown, no explanation outside JSON:
