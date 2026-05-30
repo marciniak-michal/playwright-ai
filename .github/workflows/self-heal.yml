@@ -44,6 +44,7 @@ jobs:
     permissions:
       contents: write # push heal branch
       pull-requests: write # open PR
+      actions: write # needed for actions/cache and actions/download-artifact
 
     steps:
       - name: Checkout code
@@ -88,8 +89,8 @@ jobs:
 
       - name: Configure git identity
         run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Run self-healing agent
         env:
