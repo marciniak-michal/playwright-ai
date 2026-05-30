@@ -4,7 +4,7 @@ const SKIP_TAGS = new Set(['script', 'style', 'noscript', 'template', 'svg', 'pa
 const CAPTURED_ATTRS = ['id', 'class', 'data-testid', 'role', 'name', 'type', 'href'];
 const MAX_DEPTH = 4;
 const MAX_CHILDREN = 5;
-const MAX_TEXT_LENGTH = 50;
+const MAX_TEXT_LENGTH = 60;
 
 /** Playwright auto-fixture that attaches a simplified DOM tree to every failing test. */
 export const test = base.extend<{ _domCapture: void }>({

@@ -43,9 +43,15 @@ async function callAi(context: HealingContext): Promise<AiResponse> {
     : '';
 
   const prompt = `You are a Playwright test repair agent.
-A test has failed, most likely because the UI changed (e.g. a locator selector, test-id, or visible text is now different).
+A test has failed. There are three possible root causes — identify which applies and fix it:
 
-Your task: identify what changed and return the corrected TypeScript source for the affected file(s).
+1. **UI changed**: The application was updated and a locator, test-id, or visible text no longer matches what the test expects.
+2. **Test typo**: A developer introduced a typo or incorrect string in the test itself (e.g. an expected text constant like \`expectedSubtitle = 'UserwqefTEs Login & TEST werAcco'\` that clearly does not match what the real application shows). You can identify this by using the provided simplified DOM tree of the page at the time of failure, which includes the actual text/structure.
+3. **Wrong assertion logic**: The \`expect()\` call uses an incorrect matcher or negation (e.g. \`.not.toBeVisible()\` when the element is visible and the test should assert \`.toBeVisible()\`, or \`.toHaveText('x')\` when \`.not.toHaveText('x')\` was intended). Use the DOM tree and error message to determine what the page actually shows and whether the assertion logic is inverted or uses the wrong matcher.
+
+Your task: identify the root cause and return the corrected TypeScript source for the affected file(s).
+
+${domTreeSection}
 
 ## Failing Test: ${context.testFile} (line ${context.testLine})
 \`\`\`typescript
@@ -60,17 +66,17 @@ ${context.errorMessage}
 ${context.errorLine}
 \`\`\`
 
-${domTreeSection}
-
 ## Rules
-- Only fix locators, text values, or selectors directly related to the reported error.
+- Fix locators, text values, or selectors directly related to the reported error — whether the mismatch is caused by a UI change or a typo in the test.
+- If the DOM tree is provided, treat the text/structure found in the DOM as the ground truth and update the test or page object to match it.
+- If expected text in the test looks garbled or nonsensical (e.g. random characters mixed in), treat it as a test typo and replace it with the actual value from the DOM.
+- If the assertion logic is incorrect (e.g. \`.not.toBeVisible()\` when the element is actually visible, or a wrong matcher like \`.toBeHidden()\` instead of \`.toBeVisible()\`), correct the matcher or remove/add the \`.not\` negation to reflect what the page actually shows.
 - Do NOT change test logic, add comments, or refactor anything unrelated to the failure.
 - Follow the Page Object Pattern: locators belong in page object files; assertions stay in test files.
-- If the DOM tree is provided, use it to identify the correct selector, text, or structure that replaced what the test was looking for.
 - Return ONLY valid JSON matching this exact schema — no markdown, no explanation outside JSON:
 
 {
-  "analysis": "<one sentence: what changed in the UI>",
+  "analysis": "<one sentence: what the root cause was — UI change, test typo, or wrong assertion logic — and what was corrected>",
   "fixes": [
     { "filePath": "<relative path>", "newContent": "<full corrected file content as a string>" }
   ]
@@ -88,12 +94,6 @@ ${domTreeSection}
   return JSON.parse(content) as AiResponse;
 }
 
-/**
- * Applies AI-suggested fixes to disk.
- * Returns the list of relative file paths that were actually changed.
- * When multiple AI calls suggest fixes for the same file the last one wins
- * (they all target the same root cause, so they should be identical).
- */
 function applyFixes(fixes: AiFix[]): string[] {
   // Deduplicate by filePath — last entry wins.
   const deduped = new Map<string, AiFix>();
@@ -115,12 +115,6 @@ function applyFixes(fixes: AiFix[]): string[] {
   return changed;
 }
 
-// ─── Verification ───────────────────────────────────────────────────────────
-
-/**
- * Re-runs only the previously-failing test files to confirm the fixes work.
- * Returns true when all targeted tests pass, false otherwise.
- */
 function verifyFixes(testFiles: string[]): boolean {
   const unique = [...new Set(testFiles)];
   const fileArgs = unique.map((f) => `"${f}"`).join(' ');
@@ -134,8 +128,6 @@ function verifyFixes(testFiles: string[]): boolean {
     return false;
   }
 }
-
-// ─── Git ──────────────────────────────────────────────────────────────────────
 
 function exec(cmd: string): void {
   execSync(cmd, { stdio: 'inherit' });
@@ -166,8 +158,6 @@ function commitAndPush(changedFiles: string[], branch: string): boolean {
   exec(`git push origin ${branch}`);
   return true;
 }
-
-// ─── GitHub PR ────────────────────────────────────────────────────────────────
 
 async function createPullRequest(branch: string, analyses: string[]): Promise<void> {
   const token = process.env.GITHUB_TOKEN;
@@ -239,7 +229,7 @@ async function main(): Promise<void> {
   const failingTestFiles = contexts.map((ctx) => ctx.testFile);
 
   for (const ctx of contexts) {
-    console.log(`\n[heal] Analysing: "${ctx.testTitle}"`);
+    console.log(`\n[heal] Analyzing: "${ctx.testTitle}"`);
     try {
       const result = await callAi(ctx);
       console.log(`[heal] AI analysis: ${result.analysis}`);
