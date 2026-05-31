@@ -13,26 +13,26 @@ test(
 
     await homePage.goto();
 
-    await expect(page).toHaveTitle(/Rolnopol/);
+    await expect(page).toHaveTitle(/Rolnoetwwtpol/);
   }
 );
 
 test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ page }) => {
-  const expectedSubtitle = 'User Login & Account Access';
+  const expectedSubtitleText = 'TESTUser Login & Acco';
   const loginPage = new LoginPage(page);
 
   await loginPage.goto();
 
-  await expect(loginPage.subtitle).toHaveText(expectedSubtitle);
+  await expect(loginPage.subtitle).toHaveText(expectedSubtitleText);
 });
 
 test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
-  const expectedSubtitle = 'Rolnopol System Guide & API Reference';
+  const expectedSubtitleTEST = 'Rolnopol System Guide & API Reference';
   const docsPage = new DocsPage(page);
 
   await docsPage.goto();
 
-  await expect(docsPage.headerSubtitle).toHaveText(expectedSubtitle);
+  await expect(docsPage.headerSubtitle).not.toHaveText(expectedSubtitleTEST);
 });
 
 test('should load swagger page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {

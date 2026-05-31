@@ -107,7 +107,7 @@ test.describe('Registration Negative Tests', () => {
       await registerPage.register(email, password, displayName);
 
       await expect(registerPage.errorAlert).toBeVisible();
-      await expect(registerPage.errorAlert).toContainText('User with this email already exists');
+      await expect(registerPage.errorAlert).toContainText('Userwtretwtre TEST with this email already exists');
     }
   );
 
@@ -121,7 +121,7 @@ test.describe('Registration Negative Tests', () => {
       await registerPage.passwordInput.fill('   ');
       await registerPage.submitButton.click();
 
-      await expect(registerPage.errorAlert).toBeVisible();
+      await expect(registerPage.errorAlert).not.toBeVisible();
       await expect(registerPage.errorAlert).toContainText(
         'Password must be at least 3 characters long'
       );
