@@ -8,6 +8,7 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import OpenAI from 'openai';
 import path from 'path';
+import logger from '../src/helpers/logger';
 import type { HealingContext } from '../src/reporters/failure-reporter';
 
 const FAILURES_PATH = 'test-results/failures.json';
@@ -108,11 +109,11 @@ function applyFixes(fixes: AiFix[]): string[] {
   for (const [relativePath, fix] of deduped) {
     const absPath = path.resolve(process.cwd(), relativePath);
     if (!fs.existsSync(absPath)) {
-      console.warn(`[heal] Skipping unknown file: ${relativePath}`);
+      logger.warn({ file: relativePath }, 'Skipping unknown file');
       continue;
     }
     fs.writeFileSync(absPath, fix.newContent, 'utf-8');
-    console.log(`[heal] Fixed: ${relativePath}`);
+    logger.info({ file: relativePath }, 'Fixed');
     changed.push(relativePath);
   }
   return changed;
@@ -121,13 +122,13 @@ function applyFixes(fixes: AiFix[]): string[] {
 function verifyFixes(testFiles: string[]): boolean {
   const unique = [...new Set(testFiles)];
   const fileArgs = unique.map((f) => `"${f}"`).join(' ');
-  console.log(`\n[heal] Verifying fixes — running: ${unique.join(', ')}`);
+  logger.info({ files: unique }, 'Verifying fixes');
   try {
     execSync(`npx playwright test ${fileArgs} --reporter=line`, { stdio: 'inherit' });
-    console.log('[heal] Verification passed — all fixed tests are green.');
+    logger.info('Verification passed — all fixed tests are green');
     return true;
   } catch {
-    console.log('[heal] Verification failed — tests still failing, skipping commit.');
+    logger.warn('Verification failed — tests still failing, skipping commit');
     return false;
   }
 }
@@ -145,13 +146,13 @@ function createHealBranch(): string {
 
 function commitAndPush(changedFiles: string[], branch: string): boolean {
   const quoted = changedFiles.map((f) => `"${f}"`).join(' ');
-  console.log(`[git] ${quoted} staged for commit`);
+  logger.debug({ files: changedFiles }, 'Staging files for commit');
   exec(`git add ${quoted}`);
 
   // git diff --cached --quiet exits 0 when nothing is staged, 1 when there are staged changes.
   try {
     execSync('git diff --cached --quiet', { stdio: 'pipe' });
-    console.log('[heal] No staged changes — files already match the committed state.');
+    logger.info('No staged changes — files already match the committed state');
     return false;
   } catch {
     // staged changes exist — proceed
@@ -167,7 +168,7 @@ async function createPullRequest(branch: string, analyses: string[]): Promise<vo
   const repo = process.env.GITHUB_REPOSITORY;
 
   if (!token || !repo) {
-    console.log('[heal] Skipping PR creation — GITHUB_TOKEN or GITHUB_REPOSITORY not set.');
+    logger.warn('Skipping PR creation — GITHUB_TOKEN or GITHUB_REPOSITORY not set');
     return;
   }
 
@@ -203,14 +204,14 @@ async function createPullRequest(branch: string, analyses: string[]): Promise<vo
   }
 
   const pr = (await response.json()) as { html_url: string; number: number };
-  console.log(`[heal] PR #${pr.number} created: ${pr.html_url}`);
+  logger.info({ prNumber: pr.number, url: pr.html_url }, 'PR created');
 }
 
 // ─── Entry point ──────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
   if (!fs.existsSync(FAILURES_PATH)) {
-    console.log('[heal] No failures.json found — nothing to heal.');
+    logger.info('No failures.json found — nothing to heal');
     return;
   }
 
@@ -221,36 +222,36 @@ async function main(): Promise<void> {
   const contexts = JSON.parse(fs.readFileSync(FAILURES_PATH, 'utf-8')) as HealingContext[];
 
   if (contexts.length === 0) {
-    console.log('[heal] failures.json is empty — nothing to heal.');
+    logger.info('failures.json is empty — nothing to heal');
     return;
   }
 
-  console.log(`[heal] Processing ${contexts.length} failure(s)…`);
+  logger.info({ count: contexts.length }, 'Processing failures');
 
   const allFixes: AiFix[] = [];
   const analyses: string[] = [];
   const failingTestFiles = contexts.map((ctx) => ctx.testFile);
 
   for (const ctx of contexts) {
-    console.log(`\n[heal] Analyzing: "${ctx.testTitle}"`);
+    logger.info({ test: ctx.testTitle }, 'Analyzing test');
     try {
       const result = await callAi(ctx);
-      console.log(`[heal] AI analysis: ${result.analysis}`);
+      logger.info({ analysis: result.analysis }, 'AI analysis complete');
       allFixes.push(...result.fixes);
       analyses.push(result.analysis);
     } catch (err) {
-      console.error(`[heal] AI call failed for "${ctx.testTitle}":`, err);
+      logger.error({ test: ctx.testTitle, err }, 'AI call failed');
     }
   }
 
   if (allFixes.length === 0) {
-    console.log('[heal] AI returned no fixes — no changes applied.');
+    logger.warn('AI returned no fixes — no changes applied');
     return;
   }
 
   const changedFiles = applyFixes(allFixes);
   if (changedFiles.length === 0) {
-    console.log('[heal] No files were updated.');
+    logger.warn('No files were updated');
     return;
   }
 
@@ -261,15 +262,15 @@ async function main(): Promise<void> {
   const branch = createHealBranch();
   const committed = commitAndPush(changedFiles, branch);
   if (!committed) {
-    console.log('[heal] Nothing committed — skipping PR creation.');
+    logger.info('Nothing committed — skipping PR creation');
     return;
   }
   await createPullRequest(branch, analyses);
 
-  console.log('\n[heal] Done.');
+  logger.info('Done');
 }
 
 main().catch((err) => {
-  console.error('[heal] Fatal:', err);
+  logger.fatal({ err }, 'Fatal error');
   process.exit(1);
 });
