@@ -100,7 +100,7 @@ ${context.errorLine}
 }
 
 function applyFixes(fixes: AiFix[]): string[] {
-  // Deduplicate by filePath — last entry wins.
+  // Deduplicate by filePath - last entry wins.
   const deduped = new Map<string, AiFix>();
   for (const fix of fixes) {
     deduped.set(fix.filePath, fix);
@@ -126,10 +126,10 @@ function verifyFixes(testFiles: string[]): boolean {
   logger.info({ files: unique }, 'Verifying fixes');
   try {
     execSync(`npx playwright test ${fileArgs} --reporter=line`, { stdio: 'inherit' });
-    logger.info('Verification passed — all fixed tests are green!');
+    logger.info('Verification passed - all fixed tests are green!');
     return true;
   } catch {
-    logger.warn('Verification failed — tests still failing, skipping commit');
+    logger.warn('Verification failed - tests still failing, skipping commit');
     return false;
   }
 }
@@ -156,10 +156,10 @@ function commitAndPush(changedFiles: string[], branch: string): boolean {
   // git diff --cached --quiet exits 0 when nothing is staged, 1 when there are staged changes.
   try {
     execSync('git diff --cached --quiet', { stdio: 'pipe' });
-    logger.info('No staged changes — files already match the committed state');
+    logger.info('No staged changes - files already match the committed state');
     return false;
   } catch {
-    // staged changes exist — proceed
+    // staged changes exist - proceed
   }
 
   exec(`git commit -m "fix(self-heal): auto-fix failing tests"`);
@@ -168,12 +168,12 @@ function commitAndPush(changedFiles: string[], branch: string): boolean {
 }
 
 async function createPullRequest(branch: string, analyses: string[]): Promise<void> {
-  logger.info({ branch }, 'Changes pushed — creating pull request');
+  logger.info({ branch }, 'Changes pushed - creating pull request');
   const token = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_REPOSITORY;
 
   if (!token || !repo) {
-    logger.warn('Skipping PR creation — GITHUB_TOKEN or GITHUB_REPOSITORY not set');
+    logger.warn('Skipping PR creation - GITHUB_TOKEN or GITHUB_REPOSITORY not set');
     return;
   }
 
@@ -216,7 +216,7 @@ async function createPullRequest(branch: string, analyses: string[]): Promise<vo
 
 async function main(): Promise<void> {
   if (!fs.existsSync(FAILURES_PATH)) {
-    logger.info('No failures.json found — nothing to heal');
+    logger.info('No failures.json found - nothing to heal');
     return;
   }
 
@@ -227,7 +227,7 @@ async function main(): Promise<void> {
   const contexts = JSON.parse(fs.readFileSync(FAILURES_PATH, 'utf-8')) as HealingContext[];
 
   if (contexts.length === 0) {
-    logger.info('failures.json is empty — nothing to heal');
+    logger.info('failures.json is empty - nothing to heal');
     return;
   }
 
@@ -251,15 +251,15 @@ async function main(): Promise<void> {
   }
 
   if (!allAnalysesSucceeded) {
-    logger.warn('Some AI analyses failed — skipping verification and commit');
+    logger.warn('Some AI analyses failed - skipping verification and commit');
     return;
   }
 
   if (allFixes.length === 0) {
-    logger.warn('AI returned no fixes — no changes applied');
+    logger.warn('AI returned no fixes - no changes applied');
     return;
   }
-  logger.info({ count: allFixes.length }, 'AI returned fixes — applying changes');
+  logger.info({ count: allFixes.length }, 'AI returned fixes - applying changes');
 
   const changedFiles = applyFixes(allFixes);
   if (changedFiles.length === 0) {
@@ -276,10 +276,10 @@ async function main(): Promise<void> {
 
   const committed = commitAndPush(changedFiles, branch);
   if (!committed) {
-    logger.warn('Nothing committed — skipping PR creation');
+    logger.warn('Nothing committed - skipping PR creation');
     return;
   }
-  
+
   await createPullRequest(branch, analyses);
 
   logger.info('────────────────────────────────────────────────────────────');
