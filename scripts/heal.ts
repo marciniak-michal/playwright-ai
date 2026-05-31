@@ -125,7 +125,7 @@ function verifyFixes(testFiles: string[]): boolean {
   logger.info({ files: unique }, 'Verifying fixes');
   try {
     execSync(`npx playwright test ${fileArgs} --reporter=line`, { stdio: 'inherit' });
-    logger.info('Verification passed — all fixed tests are green');
+    logger.info('Verification passed — all fixed tests are green!');
     return true;
   } catch {
     logger.warn('Verification failed — tests still failing, skipping commit');
@@ -248,26 +248,35 @@ async function main(): Promise<void> {
     logger.warn('AI returned no fixes — no changes applied');
     return;
   }
+  logger.info({ count: allFixes.length }, 'AI returned fixes — applying changes');
 
   const changedFiles = applyFixes(allFixes);
   if (changedFiles.length === 0) {
     logger.warn('No files were updated');
     return;
   }
+  logger.info({ count: changedFiles.length, files: changedFiles }, 'Files updated successfully');
 
   if (!verifyFixes(failingTestFiles)) {
     return;
   }
 
+  logger.info('Creating heal branch');
   const branch = createHealBranch();
+  logger.info({ branch }, 'Heal branch created');
+
+  logger.info({ branch, files: changedFiles }, 'Committing and pushing changes');
   const committed = commitAndPush(changedFiles, branch);
   if (!committed) {
-    logger.info('Nothing committed — skipping PR creation');
+    logger.warn('Nothing committed — skipping PR creation');
     return;
   }
+  logger.info({ branch }, 'Changes pushed — creating pull request');
   await createPullRequest(branch, analyses);
 
-  logger.info('Done');
+  logger.info('────────────────────────────────────────────────────────────');
+  logger.info('Self-healing process complete!');
+  logger.info('────────────────────────────────────────────────────────────');
 }
 
 main().catch((err) => {
