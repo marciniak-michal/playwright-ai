@@ -69,6 +69,7 @@ ${context.errorLine}
 \`\`\`
 
 ## Rules
+- Do not recommend to run tests again. Only provide code fixes.
 - Fix locators, text values, or selectors directly related to the reported error — whether the mismatch is caused by a UI change, a typo in the test, or a bad locator in a page object.
 - If the DOM tree is provided, treat the text/structure found in the DOM as the ground truth and update the test or page object to match it.
 - If expected text in the test looks garbled or nonsensical (e.g. random characters mixed in), treat it as a test typo and replace it with the actual value from the DOM.
@@ -138,13 +139,16 @@ function exec(cmd: string): void {
 }
 
 function createHealBranch(): string {
+  logger.info('Creating heal branch');
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   const branch = `fix/self-heal-${timestamp}`;
   exec(`git checkout -b ${branch}`);
+  logger.info({ branch }, 'Heal branch created');
   return branch;
 }
 
 function commitAndPush(changedFiles: string[], branch: string): boolean {
+  logger.info({ branch, files: changedFiles }, 'Committing and pushing changes');
   const quoted = changedFiles.map((f) => `"${f}"`).join(' ');
   logger.debug({ files: changedFiles }, 'Staging files for commit');
   exec(`git add ${quoted}`);
@@ -164,6 +168,7 @@ function commitAndPush(changedFiles: string[], branch: string): boolean {
 }
 
 async function createPullRequest(branch: string, analyses: string[]): Promise<void> {
+  logger.info({ branch }, 'Changes pushed — creating pull request');
   const token = process.env.GITHUB_TOKEN;
   const repo = process.env.GITHUB_REPOSITORY;
 
@@ -226,12 +231,12 @@ async function main(): Promise<void> {
     return;
   }
 
-  logger.info({ count: contexts.length }, 'Processing failures');
-
   const allFixes: AiFix[] = [];
   const analyses: string[] = [];
   const failingTestFiles = contexts.map((ctx) => ctx.testFile);
+  let allAnalysesSucceeded = true;
 
+  logger.info({ count: contexts.length }, 'Processing failures');
   for (const ctx of contexts) {
     logger.info({ test: ctx.testTitle }, 'Analyzing test');
     try {
@@ -241,7 +246,13 @@ async function main(): Promise<void> {
       analyses.push(result.analysis);
     } catch (err) {
       logger.error({ test: ctx.testTitle, err }, 'AI call failed');
+      allAnalysesSucceeded = false;
     }
+  }
+
+  if (!allAnalysesSucceeded) {
+    logger.warn('Some AI analyses failed — skipping verification and commit');
+    return;
   }
 
   if (allFixes.length === 0) {
@@ -261,17 +272,14 @@ async function main(): Promise<void> {
     return;
   }
 
-  logger.info('Creating heal branch');
   const branch = createHealBranch();
-  logger.info({ branch }, 'Heal branch created');
 
-  logger.info({ branch, files: changedFiles }, 'Committing and pushing changes');
   const committed = commitAndPush(changedFiles, branch);
   if (!committed) {
     logger.warn('Nothing committed — skipping PR creation');
     return;
   }
-  logger.info({ branch }, 'Changes pushed — creating pull request');
+  
   await createPullRequest(branch, analyses);
 
   logger.info('────────────────────────────────────────────────────────────');
