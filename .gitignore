@@ -9,4 +9,3 @@ node_modules/
 /playwright/.auth/
 .playwright-mcp/
 *.png
-app/

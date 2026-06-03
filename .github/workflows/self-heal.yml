@@ -29,18 +29,6 @@ jobs:
       options: --ipc=host
     timeout-minutes: 15
 
-    services:
-      rolnopol:
-        image: jaktestowac/rolnopol:latest
-        ports:
-          - 3000:3000
-        options: >-
-          --health-cmd "wget -qO- http://localhost:3000 || exit 1"
-          --health-interval 5s
-          --health-timeout 3s
-          --health-retries 1
-          --health-start-period 10s
-
     permissions:
       contents: write # push heal branch
       pull-requests: write # open PR
@@ -65,10 +53,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Wait for rolnopol service
+      - name: Install app dependencies
+        run: npm ci --prefix app
+
+      - name: Start app
+        run: cd app && node ./api/index.js &
+
+      - name: Wait for app
         run: |
-          timeout 10s bash -c 'until curl -fsS http://rolnopol:3000/api/v1/healthcheck >/dev/null 2>&1; do sleep 1; done' || { echo "rolnopol failed to become ready in time" >&2; exit 1; }
-          echo "rolnopol is ready"
+          timeout 10s bash -c 'until curl -fsS http://localhost:3000/api/v1/healthcheck >/dev/null 2>&1; do sleep 1; done' || { echo "app failed to become ready in time" >&2; exit 1; }
+          echo "app is ready"
 
       - name: Resolve browser name
         id: browser
@@ -99,5 +93,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.HEAL_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           BASE_BRANCH: ${{ github.event.repository.default_branch || 'master' }}
-          BASE_URL: http://rolnopol:3000
+          BASE_URL: http://localhost:3000
         run: npx tsx scripts/heal.ts

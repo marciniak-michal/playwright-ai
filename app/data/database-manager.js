@@ -1,0 +1,347 @@
+const path = require("path");
+const JSONDatabase = require("./json-database");
+const { CHAOS_ENGINE_DEFAULT_DATA } = require("./chaos-engine.defaults");
+
+/**
+ * Global Database Manager - Provides singleton JSONDatabase instances
+ * to prevent multiple instances for the same resources and ensure proper synchronization
+ */
+class DatabaseManager {
+  constructor() {
+    this.instances = new Map();
+    this.basePath = path.join(__dirname);
+  }
+
+  /**
+   * Get a singleton JSONDatabase instance for a specific resource
+   * @param {string} resourceName - The name of the resource (e.g., 'fields', 'animals', 'financial')
+   * @param {string} fileName - The filename (e.g., 'fields.json', 'animals.json')
+   * @param {*} defaultData - Default data structure if file doesn't exist
+   * @returns {JSONDatabase} Singleton instance
+   */
+  getDatabase(resourceName, fileName, defaultData = []) {
+    const key = `${resourceName}:${fileName}`;
+
+    if (!this.instances.has(key)) {
+      const filePath = path.join(this.basePath, fileName);
+      const instance = new JSONDatabase(filePath, defaultData);
+      this.instances.set(key, instance);
+
+      // Log the creation of new database instance
+      const { logDebug } = require("../helpers/logger-api");
+      logDebug(`Created new database instance: ${key}`, { filePath });
+    }
+
+    return this.instances.get(key);
+  }
+
+  /**
+   * Get fields database singleton
+   */
+  getFieldsDatabase() {
+    return this.getDatabase("fields", "fields.json", []);
+  }
+
+  /**
+   * Get animals database singleton
+   */
+  getAnimalsDatabase() {
+    return this.getDatabase("animals", "animals.json", []);
+  }
+
+  /**
+   * Get staff database singleton
+   */
+  getStaffDatabase() {
+    return this.getDatabase("staff", "staff.json", []);
+  }
+
+  /**
+   * Get assignments database singleton
+   */
+  getAssignmentsDatabase() {
+    return this.getDatabase("assignments", "assignments.json", []);
+  }
+
+  /**
+   * Get financial database singleton
+   */
+  getFinancialDatabase() {
+    return this.getDatabase("financial", "financial.json", {
+      accounts: [],
+      counters: {
+        lastAccountId: 0,
+        lastTransactionId: 0,
+      },
+    });
+  }
+
+  /**
+   * Get marketplace database singleton
+   */
+  getMarketplaceDatabase() {
+    return this.getDatabase("marketplace", "marketplace.json", {
+      offers: [],
+      transactions: [],
+      counters: {
+        lastListingId: 0,
+        lastTransactionId: 0,
+      },
+    });
+  }
+
+  /**
+   * Get feature flags database singleton
+   */
+  getFeatureFlagsDatabase() {
+    const defaultFlags = require("./feature-flags.json");
+    return this.getDatabase("feature-flags", "feature-flags.json", defaultFlags);
+  }
+
+  /**
+   * Get chaos engine database singleton
+   */
+  getChaosEngineDatabase() {
+    // Do not require("./chaos-engine.json") here: if file is missing, startup should not crash.
+    // JSONDatabase will recreate the file from provided defaults when it does not exist.
+    const defaultChaosEngine = JSON.parse(JSON.stringify(CHAOS_ENGINE_DEFAULT_DATA));
+    return this.getDatabase("chaos-engine", "chaos-engine.json", defaultChaosEngine);
+  }
+
+  /**
+   * Get blogs database singleton
+   */
+  getBlogsDatabase() {
+    return this.getDatabase("blogs", "blogs.json", []);
+  }
+
+  /**
+   * Get posts database singleton
+   */
+  getPostsDatabase() {
+    return this.getDatabase("posts", "posts.json", []);
+  }
+
+  /**
+   * Get Farmlog post likes database singleton
+   */
+  getPostLikesDatabase() {
+    return this.getDatabase("farmlog-post-likes", "farmlog-post-likes.json", []);
+  }
+
+  /**
+   * Get Farmlog favorites database singleton
+   */
+  getFarmlogFavoritesDatabase() {
+    return this.getDatabase("farmlog-favorites", "farmlog-favorites.json", []);
+  }
+
+  /**
+   * Get users database singleton
+   */
+  getUsersDatabase() {
+    return this.getDatabase("users", "users.json", []);
+  }
+
+  /**
+   * Get user avatars database singleton
+   */
+  getUserAvatarsDatabase() {
+    return this.getDatabase("user-avatars", "user-avatars.json", {
+      version: 1,
+      avatars: [],
+      updatedAt: null,
+    });
+  }
+
+  /**
+   * Get personal API keys database singleton
+   */
+  getPersonalApiKeysDatabase() {
+    return this.getDatabase("personal-api-keys", "personal-api-keys.json", {
+      version: 1,
+      keys: [],
+      updatedAt: null,
+    });
+  }
+
+  /**
+   * Get webhooks database singleton
+   */
+  getWebhooksDatabase() {
+    return this.getDatabase("webhooks", "webhooks.json", {
+      version: 1,
+      webhooks: [],
+      counters: {
+        lastWebhookId: 0,
+      },
+      updatedAt: null,
+    });
+  }
+
+  /**
+   * Get webhook deliveries database singleton
+   */
+  getWebhookDeliveriesDatabase() {
+    return this.getDatabase("webhook-deliveries", "webhook-deliveries.json", {
+      version: 1,
+      deliveries: [],
+      counters: {
+        lastDeliveryId: 0,
+      },
+      updatedAt: null,
+    });
+  }
+
+  /**
+   * Get messages database singleton
+   */
+  getMessagesDatabase() {
+    return this.getDatabase("messages", "messages.json", {
+      messages: [],
+    });
+  }
+
+  /**
+   * Get commodities database singleton
+   */
+  getCommoditiesDatabase() {
+    return this.getDatabase("commodities", "commodities.json", {
+      holdings: [],
+      metadata: {
+        version: 1,
+        updatedAt: null,
+      },
+    });
+  }
+
+  /**
+   * Get pets database singleton
+   */
+  getPetsDatabase() {
+    return this.getDatabase("pets", "pets.json", {
+      pets: [],
+    });
+  }
+
+  /**
+   * Get task manager database singleton
+   */
+  getTasksDatabase() {
+    return this.getDatabase("tasks", "tasks.json", {
+      version: 1,
+      tasks: [],
+      labels: [],
+      statuses: [],
+      counters: {
+        lastTaskId: 0,
+        lastLabelId: 0,
+        lastStatusId: 0,
+        lastChecklistItemId: 0,
+      },
+      updatedAt: null,
+    });
+  }
+
+  /**
+   * Get a custom database singleton
+   */
+  getCustomDatabase(resourceName, fileName, defaultData = []) {
+    return this.getDatabase(resourceName, fileName, defaultData);
+  }
+
+  /**
+   * Clear all database instances (useful for testing)
+   */
+  clearAll() {
+    this.instances.clear();
+  }
+
+  /**
+   * Get status of all database instances
+   */
+  getStatus() {
+    const status = {};
+    for (const [key, instance] of this.instances) {
+      status[key] = {
+        filePath: instance.filePath,
+        semaphoreStatus: instance.getSemaphoreStatus(),
+      };
+    }
+    return status;
+  }
+
+  /**
+   * Get the number of active database instances
+   */
+  getInstanceCount() {
+    return this.instances.size;
+  }
+
+  /**
+   * Get database health and statistics
+   */
+  getHealthStats() {
+    const stats = {
+      totalInstances: this.instances.size,
+      instances: {},
+      semaphores: {},
+    };
+
+    for (const [key, instance] of this.instances) {
+      const semaphoreStatus = instance.getSemaphoreStatus();
+      stats.instances[key] = {
+        filePath: instance.filePath,
+        exists: require("fs").existsSync(instance.filePath),
+      };
+      stats.semaphores[key] = semaphoreStatus;
+    }
+
+    return stats;
+  }
+
+  /**
+   * Validate all database instances
+   */
+  async validateAll() {
+    const results = {};
+
+    for (const [key, instance] of this.instances) {
+      try {
+        await instance.read();
+        results[key] = { status: "ok", error: null };
+      } catch (error) {
+        results[key] = { status: "error", error: error.message };
+      }
+    }
+
+    return results;
+  }
+
+  /**
+   * Reload all managed databases from disk
+   */
+  async reloadAllFromDisk() {
+    for (const db of this.instances.values()) {
+      if (typeof db.reloadFromDisk === "function") {
+        await db.reloadFromDisk();
+      }
+    }
+  }
+
+  /**
+   * Get memory usage statistics
+   */
+  getMemoryStats() {
+    const stats = {
+      instances: this.instances.size,
+      memoryUsage: process.memoryUsage(),
+      uptime: process.uptime(),
+    };
+
+    return stats;
+  }
+}
+
+// Export a singleton instance
+module.exports = new DatabaseManager();

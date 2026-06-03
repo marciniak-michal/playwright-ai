@@ -1,0 +1,141 @@
+const BaseProvider = require("./base.provider");
+const { getToolsForOpenRouter } = require("../tools/tools-registry");
+const { logWarning, logInfo } = require("../../../helpers/logger-api");
+
+const DEFAULT_OPENROUTER_API_BASE_URL = "https://openrouter.ai/api/v1";
+const DEFAULT_OPENROUTER_MODEL = "google/gemma-4-26b-a4b-it:free";
+
+class OpenRouterProvider extends BaseProvider {
+  constructor(options = {}) {
+    super(options, {
+      name: "openrouter",
+      envKeyPrefix: "OPENROUTER",
+      defaultModel: DEFAULT_OPENROUTER_MODEL,
+      defaultApiBaseUrl: DEFAULT_OPENROUTER_API_BASE_URL,
+      defaultTimeoutMs: 30_000,
+      defaultRetries: 2,
+    });
+
+    if (typeof this.model === "string" && !this.model.endsWith(":free")) {
+      logWarning(`🟥 OpenRouter model '${this.model}' is not a free model. Handle with care.`);
+    } 
+  }
+
+  _buildUrl() {
+    return `${this.apiBaseUrl}/chat/completions`;
+  }
+
+  _buildKeyInfoUrl() {
+    return `${this.apiBaseUrl}/key`;
+  }
+
+  _buildHeaders() {
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${this.apiKey}`,
+      "HTTP-Referer": "http://localhost", // OpenRouter recommended
+      "X-Title": "Rolnopol Farm Assistant",
+    };
+  }
+
+  _extractText(data) {
+    const message = data?.choices?.[0]?.message;
+    if (!message || typeof message.content !== "string") {
+      return "";
+    }
+
+    return message.content.trim();
+  }
+
+  _extractToolCalls(data) {
+    const message = data?.choices?.[0]?.message;
+    if (!message || !message.tool_calls) {
+      return null;
+    }
+
+    const toolCalls = message.tool_calls.map((tc) => ({
+      name: tc.function.name,
+      arguments: this._parseToolArguments(tc.function.arguments),
+    }));
+
+    return toolCalls.length > 0 ? toolCalls : null;
+  }
+
+  async askText(userMessage, options = {}) {
+    const systemInstruction = options?.systemInstruction?.parts?.[0]?.text || "";
+    const generationConfig = options?.generationConfig || {};
+    const useTools = options.useTools !== false; // Enable tools by default
+    const messages = options.messages; // Support full conversation history
+
+    const data = await this._callApiWithRetry(
+      () => {
+        // If messages provided, use full conversation; otherwise build from single message
+        const msgArray = messages
+          ? messages.map((msg) => ({
+              role: msg.role,
+              content: msg.content,
+            }))
+          : userMessage
+            ? [
+                {
+                  role: "user",
+                  content: userMessage,
+                },
+              ]
+            : [];
+
+        const payload = {
+          model: this.model,
+          messages: [
+            {
+              role: "system",
+              content: systemInstruction,
+            },
+            ...msgArray,
+          ],
+          temperature: generationConfig?.temperature ?? 0.7,
+          max_tokens: generationConfig?.maxOutputTokens ?? 2048,
+        };
+
+        // Add tools if supported and enabled
+        if (useTools) {
+          payload.tools = getToolsForOpenRouter();
+        }
+
+        return payload;
+      },
+      (data) => this._extractText(data),
+    );
+
+    const text = this._extractText(data);
+    const toolCalls = this._extractToolCalls(data);
+
+    return {
+      text: text || "No response from model.",
+      toolCalls: toolCalls || null,
+      raw: data,
+      usage: data?.usage ?? null,
+    };
+  }
+
+  async getRateLimits() {
+    const raw = await this._callJsonEndpointWithRetry({
+      url: this._buildKeyInfoUrl(),
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+        "HTTP-Referer": "http://localhost",
+        "X-Title": "Rolnopol Farm Assistant",
+      },
+      requireModel: false,
+    });
+
+    return {
+      provider: this.providerName,
+      supported: true,
+      raw,
+    };
+  }
+}
+
+module.exports = OpenRouterProvider;
