@@ -8,6 +8,3 @@ node_modules/
 /playwright/.auth/
 .playwright-mcp/
 *.png
-
-# Data created during development or testing
-app/data/
