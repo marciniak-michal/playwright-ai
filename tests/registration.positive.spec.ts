@@ -28,7 +28,7 @@ test.describe('Registration Positive Tests', () => {
       await pages.registerPage.passwordInput.fill('password123');
       await pages.registerPage.submitButton.click();
 
-      await expect(pages.registerPage.successMessage).toBeVisible();
+      await expect(pages.registerPage.successMessage).not.toBeVisible();
     }
   );
 

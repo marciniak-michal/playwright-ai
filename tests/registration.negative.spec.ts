@@ -12,7 +12,7 @@ test.describe('Registration Negative Tests', () => {
     async ({ pages }) => {
       await pages.registerPage.submitButton.click();
 
-      await expect(pages.registerPage.emailInput).toBeFocused();
+      await expect(pages.registerPage.emailInput).not.toBeFocused();
       await expect(pages.registerPage.successMessage).not.toBeVisible();
     }
   );
@@ -36,7 +36,7 @@ test.describe('Registration Negative Tests', () => {
         await pages.registerPage.submitButton.click();
 
         await expect(pages.registerPage.errorAlert).toHaveText(
-          'Please enter a valid email address'
+          'Please enter qwerqwra valid email address'
         );
         await expect(pages.registerPage.successMessage).not.toBeVisible();
       }
