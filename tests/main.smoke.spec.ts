@@ -4,9 +4,12 @@ test(
   'should display page with Rolnopol title on homepage',
   { tag: ['@e2e', '@smoke'] },
   async ({ pages }) => {
+    const expectedSubtitle = 'Futuristic Farm & Resource Management';
+
     await pages.home.goto();
 
     await expect(pages.home.page).toHaveTitle(/Rolnopol/);
+    await expect(pages.home.subtitle).toHaveText(expectedSubtitle);
   }
 );
 
