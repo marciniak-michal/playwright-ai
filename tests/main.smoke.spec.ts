@@ -30,11 +30,12 @@ test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ pa
 });
 
 test('should load swagger page', { tag: ['@smoke', '@documentation'] }, async ({ pages }) => {
-  const expectedDescription = 'API documentation for the Rolnopol service with versioning support';
+  const expectedDescriptionText =
+    'API documentation for the Rolnopol service with versioning support';
 
   await pages.swagger.goto();
 
-  await expect(pages.swagger.apiDescription).toHaveText(expectedDescription);
+  await expect(pages.swagger.apiDescription).toHaveText(expectedDescriptionText);
 });
 
 test(
