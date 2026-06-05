@@ -39,7 +39,7 @@ jobs:
         run: npm ci --prefix app
 
       - name: Start app
-        run: cd app && node ./api/index.js &
+        run: cd app && npm start &
 
       - name: Wait for app
         run: |
@@ -47,8 +47,6 @@ jobs:
           echo "app is ready"
 
       - name: Run tests
-        env:
-          BASE_URL: http://localhost:3000
         run: npx playwright test --project=${{ matrix.browser }}
 
       - name: Upload test failures artifact

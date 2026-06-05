@@ -22,6 +22,13 @@ export default defineConfig({
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
+  webServer: {
+    command: 'npm install && npm start',
+    cwd: './app',
+    url: 'http://localhost:3000/api/v1/healthcheck',
+    reuseExistingServer: !process.env.CI,
+    timeout: 15 * 1000,
+  },
   projects: [
     {
       name: 'chromium',
