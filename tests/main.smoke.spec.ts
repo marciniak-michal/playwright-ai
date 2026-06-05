@@ -4,7 +4,7 @@ test(
   'should display page with Rolnopol title on homepage',
   { tag: ['@e2e', '@smoke'] },
   async ({ pages }) => {
-    const expectedSubtitle = 'Futuristic Farm & Resource Management';
+    const expectedSubtitle = 'Futuristic Farm & Resource Management System';
 
     await pages.homePage.goto();
 
