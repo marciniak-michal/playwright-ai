@@ -3,7 +3,7 @@ import { generateUniqueEmail } from '../src/helpers/testDataHelper';
 
 test.describe('Registration Positive Tests', () => {
   test.beforeEach(async ({ pages }) => {
-    await pages.register.goto();
+    await pages.registerPage.goto();
   });
 
   test(
@@ -12,9 +12,9 @@ test.describe('Registration Positive Tests', () => {
     async ({ pages }) => {
       const email = generateUniqueEmail();
 
-      await pages.register.register(email, 'abc');
+      await pages.registerPage.register(email, 'abc');
 
-      await expect(pages.register.successMessage).toBeVisible();
+      await expect(pages.registerPage.successMessage).toBeVisible();
     }
   );
 
@@ -24,11 +24,11 @@ test.describe('Registration Positive Tests', () => {
     async ({ pages }) => {
       const email = generateUniqueEmail();
 
-      await pages.register.emailInput.fill(email);
-      await pages.register.passwordInput.fill('password123');
-      await pages.register.submitButton.click();
+      await pages.registerPage.emailInput.fill(email);
+      await pages.registerPage.passwordInput.fill('password123');
+      await pages.registerPage.submitButton.click();
 
-      await expect(pages.register.successMessage).toBeVisible();
+      await expect(pages.registerPage.successMessage).toBeVisible();
     }
   );
 
@@ -40,9 +40,9 @@ test.describe('Registration Positive Tests', () => {
       const displayName = 'Test User';
       const password = 'Test123!';
 
-      await pages.register.register(email, password, displayName);
+      await pages.registerPage.register(email, password, displayName);
 
-      await expect(pages.register.successMessage).toBeVisible();
+      await expect(pages.registerPage.successMessage).toBeVisible();
       await expect(page).toHaveURL(/.*\/login\.html/);
     }
   );

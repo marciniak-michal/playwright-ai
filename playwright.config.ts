@@ -26,8 +26,7 @@ export default defineConfig({
     command: 'npm install && npm start',
     cwd: './app',
     url: 'http://localhost:3000/api/v1/healthcheck',
-    reuseExistingServer: true,
-    timeout: 15 * 1000,
+    reuseExistingServer: !process.env.CI,
   },
   projects: [
     {

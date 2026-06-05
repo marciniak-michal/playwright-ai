@@ -12,33 +12,33 @@ import { SwaggerPage } from './swagger.page';
 export class PageFactory {
   private readonly _page: Page;
 
-  private _home?: HomePage;
-  private _login?: LoginPage;
-  private _register?: RegisterPage;
-  private _docs?: DocsPage;
-  private _swagger?: SwaggerPage;
+  private _homePage?: HomePage;
+  private _loginPage?: LoginPage;
+  private _registerPage?: RegisterPage;
+  private _docsPage?: DocsPage;
+  private _swaggerPage?: SwaggerPage;
 
   constructor(page: Page) {
     this._page = page;
   }
 
-  get home(): HomePage {
-    return (this._home ??= new HomePage(this._page));
+  get homePage(): HomePage {
+    return (this._homePage ??= new HomePage(this._page));
   }
 
-  get login(): LoginPage {
-    return (this._login ??= new LoginPage(this._page));
+  get loginPage(): LoginPage {
+    return (this._loginPage ??= new LoginPage(this._page));
   }
 
-  get register(): RegisterPage {
-    return (this._register ??= new RegisterPage(this._page));
+  get registerPage(): RegisterPage {
+    return (this._registerPage ??= new RegisterPage(this._page));
   }
 
-  get docs(): DocsPage {
-    return (this._docs ??= new DocsPage(this._page));
+  get docsPage(): DocsPage {
+    return (this._docsPage ??= new DocsPage(this._page));
   }
 
-  get swagger(): SwaggerPage {
-    return (this._swagger ??= new SwaggerPage(this._page));
+  get swaggerPage(): SwaggerPage {
+    return (this._swaggerPage ??= new SwaggerPage(this._page));
   }
 }

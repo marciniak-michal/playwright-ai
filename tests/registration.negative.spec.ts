@@ -3,17 +3,17 @@ import { generateUniqueEmail } from '../src/helpers/testDataHelper';
 
 test.describe('Registration Negative Tests', () => {
   test.beforeEach(async ({ pages }) => {
-    await pages.register.goto();
+    await pages.registerPage.goto();
   });
 
   test(
     'should show validation error when all fields are empty',
     { tag: ['@auth', '@negative', '@registration'] },
     async ({ pages }) => {
-      await pages.register.submitButton.click();
+      await pages.registerPage.submitButton.click();
 
-      await expect(pages.register.emailInput).toBeFocused();
-      await expect(pages.register.successMessage).not.toBeVisible();
+      await expect(pages.registerPage.emailInput).toBeFocused();
+      await expect(pages.registerPage.successMessage).not.toBeVisible();
     }
   );
 
@@ -31,12 +31,14 @@ test.describe('Registration Negative Tests', () => {
       `should show validation error for invalid email: ${email}`,
       { tag: ['@auth', '@negative', '@registration'] },
       async ({ pages }) => {
-        await pages.register.emailInput.fill(email);
-        await pages.register.passwordInput.fill('password123');
-        await pages.register.submitButton.click();
+        await pages.registerPage.emailInput.fill(email);
+        await pages.registerPage.passwordInput.fill('password123');
+        await pages.registerPage.submitButton.click();
 
-        await expect(pages.register.errorAlert).toHaveText('Please enter a valid email address');
-        await expect(pages.register.successMessage).not.toBeVisible();
+        await expect(pages.registerPage.errorAlert).toHaveText(
+          'Please enter a valid email address'
+        );
+        await expect(pages.registerPage.successMessage).not.toBeVisible();
       }
     );
   }
@@ -45,11 +47,13 @@ test.describe('Registration Negative Tests', () => {
     'should show validation error for password less than 3 characters',
     { tag: ['@auth', '@negative', '@registration'] },
     async ({ pages }) => {
-      await pages.register.emailInput.fill('test@example.com');
-      await pages.register.passwordInput.fill('ab');
-      await pages.register.submitButton.click();
+      await pages.registerPage.emailInput.fill('test@example.com');
+      await pages.registerPage.passwordInput.fill('ab');
+      await pages.registerPage.submitButton.click();
 
-      await expect(pages.register.errorAlert).toHaveText('Password must be at least 3 characters');
+      await expect(pages.registerPage.errorAlert).toHaveText(
+        'Password must be at least 3 characters'
+      );
     }
   );
 
@@ -57,12 +61,12 @@ test.describe('Registration Negative Tests', () => {
     'should show validation error for display name less than 3 characters',
     { tag: ['@auth', '@negative', '@registration'] },
     async ({ pages }) => {
-      await pages.register.emailInput.fill('test@example.com');
-      await pages.register.displayNameInput.fill('ab');
-      await pages.register.passwordInput.fill('password123');
-      await pages.register.submitButton.click();
+      await pages.registerPage.emailInput.fill('test@example.com');
+      await pages.registerPage.displayNameInput.fill('ab');
+      await pages.registerPage.passwordInput.fill('password123');
+      await pages.registerPage.submitButton.click();
 
-      await expect(pages.register.errorAlert).toHaveText(
+      await expect(pages.registerPage.errorAlert).toHaveText(
         'Display name must be at least 3 characters'
       );
     }
@@ -74,9 +78,9 @@ test.describe('Registration Negative Tests', () => {
     async ({ pages }) => {
       const longName = 'ThisIsAVeryLongDisplayName';
 
-      await pages.register.displayNameInput.fill(longName);
+      await pages.registerPage.displayNameInput.fill(longName);
 
-      const actualValue = await pages.register.displayNameInput.inputValue();
+      const actualValue = await pages.registerPage.displayNameInput.inputValue();
       expect(actualValue).toHaveLength(20);
       expect(actualValue).toBe('ThisIsAVeryLongDispl');
     }
@@ -90,17 +94,19 @@ test.describe('Registration Negative Tests', () => {
       const password = 'password123';
       const displayName = 'Test User';
 
-      await pages.register.emailInput.fill(email);
-      await pages.register.displayNameInput.fill(displayName);
-      await pages.register.passwordInput.fill(password);
-      await pages.register.submitButton.click();
-      await expect(pages.register.successMessage).toBeVisible();
+      await pages.registerPage.emailInput.fill(email);
+      await pages.registerPage.displayNameInput.fill(displayName);
+      await pages.registerPage.passwordInput.fill(password);
+      await pages.registerPage.submitButton.click();
+      await expect(pages.registerPage.successMessage).toBeVisible();
 
-      await pages.register.goto();
-      await pages.register.register(email, password, displayName);
+      await pages.registerPage.goto();
+      await pages.registerPage.register(email, password, displayName);
 
-      await expect(pages.register.errorAlert).toBeVisible();
-      await expect(pages.register.errorAlert).toContainText('User with this email already exists');
+      await expect(pages.registerPage.errorAlert).toBeVisible();
+      await expect(pages.registerPage.errorAlert).toContainText(
+        'User with this email already exists'
+      );
     }
   );
 
@@ -110,12 +116,12 @@ test.describe('Registration Negative Tests', () => {
     async ({ pages }) => {
       const email = generateUniqueEmail();
 
-      await pages.register.emailInput.fill(email);
-      await pages.register.passwordInput.fill('   ');
-      await pages.register.submitButton.click();
+      await pages.registerPage.emailInput.fill(email);
+      await pages.registerPage.passwordInput.fill('   ');
+      await pages.registerPage.submitButton.click();
 
-      await expect(pages.register.errorAlert).toBeVisible();
-      await expect(pages.register.errorAlert).toContainText(
+      await expect(pages.registerPage.errorAlert).toBeVisible();
+      await expect(pages.registerPage.errorAlert).toContainText(
         'Password must be at least 3 characters long'
       );
     }

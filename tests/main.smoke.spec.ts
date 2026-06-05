@@ -6,35 +6,35 @@ test(
   async ({ pages }) => {
     const expectedSubtitle = 'Futuristic Farm & Resource Management';
 
-    await pages.home.goto();
+    await pages.homePage.goto();
 
-    await expect(pages.home.page).toHaveTitle(/Rolnopol/);
-    await expect(pages.home.subtitle).toHaveText(expectedSubtitle);
+    await expect(pages.homePage.page).toHaveTitle(/Rolnopol/);
+    await expect(pages.homePage.subtitle).toHaveText(expectedSubtitle);
   }
 );
 
 test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ pages }) => {
   const expectedSubtitle = 'User Login & Account Access';
 
-  await pages.login.goto();
+  await pages.loginPage.goto();
 
-  await expect(pages.login.subtitle).toHaveText(expectedSubtitle);
+  await expect(pages.loginPage.subtitle).toHaveText(expectedSubtitle);
 });
 
 test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ pages }) => {
   const expectedSubtitle = 'Rolnopol System Guide & API Reference';
 
-  await pages.docs.goto();
+  await pages.docsPage.goto();
 
-  await expect(pages.docs.headerSubtitle).toHaveText(expectedSubtitle);
+  await expect(pages.docsPage.headerSubtitle).toHaveText(expectedSubtitle);
 });
 
 test('should load swagger page', { tag: ['@smoke', '@documentation'] }, async ({ pages }) => {
   const expectedDescription = 'API documentation for the Rolnopol service with versioning support';
 
-  await pages.swagger.goto();
+  await pages.swaggerPage.goto();
 
-  await expect(pages.swagger.apiDescription).toHaveText(expectedDescription);
+  await expect(pages.swaggerPage.apiDescription).toHaveText(expectedDescription);
 });
 
 test(
@@ -43,8 +43,8 @@ test(
   async ({ pages }) => {
     const expectedSubtitle = 'Create Your User Account';
 
-    await pages.register.goto();
+    await pages.registerPage.goto();
 
-    await expect(pages.register.subtitle).toHaveText(expectedSubtitle);
+    await expect(pages.registerPage.subtitle).toHaveText(expectedSubtitle);
   }
 );
