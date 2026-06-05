@@ -1,4 +1,9 @@
 import { test as base } from '@playwright/test';
+import { PageFactory } from '../pages/pageFactory';
+
+type Fixtures = {
+  pages: PageFactory;
+};
 
 const SKIP_TAGS = new Set(['script', 'style', 'noscript', 'template', 'svg', 'path', 'defs']);
 const CAPTURED_ATTRS = ['id', 'class', 'data-testid', 'role', 'name', 'type', 'href'];
@@ -6,8 +11,13 @@ const MAX_DEPTH = 4;
 const MAX_CHILDREN = 5;
 const MAX_TEXT_LENGTH = 60;
 
-/** Playwright auto-fixture that attaches a simplified DOM tree to every failing test. */
-export const test = base.extend<{ _domCapture: void }>({
+/** Playwright auto-fixture that attaches a simplified DOM tree to every failing test
+ * and provides lazy page object instances via PageFactory. */
+export const test = base.extend<Fixtures & { _domCapture: void }>({
+  pages: async ({ page }, use) => {
+    await use(new PageFactory(page));
+  },
+
   _domCapture: [
     async ({ page }, use, testInfo) => {
       await use();

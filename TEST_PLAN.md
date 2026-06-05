@@ -59,13 +59,10 @@ All test cases use a consistent 2-tag pattern: **`@feature @type`**
 #### Registration - Negative Tests
 
 - **Empty form submission** `@auth @negative @registration`: Submit empty form → validation error on required fields ✅
-- **Invalid email without @** `@auth @negative @registration`: Email without @ symbol → validation error mentioning @ ✅
-- **Email with spaces** `@auth @negative @registration`: Email containing spaces → validation error shown ✅
-- **Invalid email variants tested** `@auth @negative @registration`: cases like `invalid-email`, `test@`, `@example.com`, `test@example`, `test@.com`, `test @example.com` → validation error shown ✅
+- **Invalid email format** `@auth @negative @registration`: Parametrized cases — `invalid-email`, `test@`, `@example.com`, `test@example`, `test@.com`, `test @example.com` → "Please enter a valid email address" shown for each ✅
 - **Password too short** `@auth @negative @registration`: Password with less than 3 characters → validation error shown ✅
 - **Display name too short** `@auth @negative @registration`: Display name with less than 3 characters → validation error shown ✅
-- **Display name truncation** `@auth @negative @registration`: Display name exceeding 20 characters → automatically truncated to 20 chars ✅
-  - **Truncation detail**: long names are truncated to exactly 20 characters (e.g. "ThisIsAVeryLongDispl") ✅
+- **Display name truncation** `@auth @negative @registration`: Display name exceeding 20 characters → automatically truncated to exactly 20 characters (e.g. "ThisIsAVeryLongDispl") ✅
 - **Duplicate email** `@auth @negative @registration`: Register with existing email → error message "User with this email already exists" ✅
 - **Whitespace-only password** `@auth @negative @registration`: Password with only spaces → error message "Password must be at least 3 characters long" ✅
 

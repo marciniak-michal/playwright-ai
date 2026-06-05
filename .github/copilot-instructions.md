@@ -37,7 +37,7 @@ Follow these rules for all commit messages:
 
 When creating new Playwright tests, always use minimum **2 tags**: `@feature @type`
 
-- **Features**: `@auth`, `@farm`, `@marketplace`, `@finance`, `@access`, `@api`, `@e2e` (or other relevant feature tags)
+- **Features**: `@auth`, `@farm`, `@marketplace`, `@finance`, `@access`, `@api`, `@e2e`, `@documentation`, `@registration`, `@login` (or other relevant feature tags)
 - **Types**: `@smoke`, `@regression`, `@integration`, `@negative` (or other relevant type tags)
 
 Example: `test('should login', { tag: ['@auth', '@smoke'] })`

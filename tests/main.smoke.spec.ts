@@ -1,58 +1,47 @@
 import { expect, test } from '../src/fixtures';
-import { DocsPage } from '../src/pages/docs.page';
-import { HomePage } from '../src/pages/home.page';
-import { LoginPage } from '../src/pages/login.page';
-import { RegisterPage } from '../src/pages/register.page';
-import { SwaggerPage } from '../src/pages/swagger.page';
 
 test(
   'should display page with Rolnopol title on homepage',
   { tag: ['@e2e', '@smoke'] },
-  async ({ page }) => {
-    const homePage = new HomePage(page);
+  async ({ pages }) => {
+    await pages.home.goto();
 
-    await homePage.goto();
-
-    await expect(page).toHaveTitle(/Rolnopol/);
+    await expect(pages.home.page).toHaveTitle(/Rolnopol/);
   }
 );
 
-test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ page }) => {
+test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ pages }) => {
   const expectedSubtitle = 'User Login & Account Access';
-  const loginPage = new LoginPage(page);
 
-  await loginPage.goto();
+  await pages.login.goto();
 
-  await expect(loginPage.subtitle).toHaveText(expectedSubtitle);
+  await expect(pages.login.subtitle).toHaveText(expectedSubtitle);
 });
 
-test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
+test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ pages }) => {
   const expectedSubtitle = 'Rolnopol System Guide & API Reference';
-  const docsPage = new DocsPage(page);
 
-  await docsPage.goto();
+  await pages.docs.goto();
 
-  await expect(docsPage.headerSubtitle).toHaveText(expectedSubtitle);
+  await expect(pages.docs.headerSubtitle).toHaveText(expectedSubtitle);
 });
 
-test('should load swagger page', { tag: ['@smoke', '@documentation'] }, async ({ page }) => {
+test('should load swagger page', { tag: ['@smoke', '@documentation'] }, async ({ pages }) => {
   const expectedDescription = 'API documentation for the Rolnopol service with versioning support';
-  const swaggerPage = new SwaggerPage(page);
 
-  await swaggerPage.goto();
+  await pages.swagger.goto();
 
-  await expect(swaggerPage.apiDescription).toHaveText(expectedDescription);
+  await expect(pages.swagger.apiDescription).toHaveText(expectedDescription);
 });
 
 test(
   'should load register page',
   { tag: ['@auth', '@smoke', '@registration'] },
-  async ({ page }) => {
+  async ({ pages }) => {
     const expectedSubtitle = 'Create Your User Account';
-    const registerPage = new RegisterPage(page);
 
-    await registerPage.goto();
+    await pages.register.goto();
 
-    await expect(registerPage.subtitle).toHaveText(expectedSubtitle);
+    await expect(pages.register.subtitle).toHaveText(expectedSubtitle);
   }
 );

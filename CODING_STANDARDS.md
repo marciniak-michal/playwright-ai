@@ -64,19 +64,26 @@ export class RegisterPage {
 }
 ```
 
+## PageFactory Fixture
+
+All page objects are accessed through the `pages` fixture provided by `src/fixtures/index.ts`. Tests never instantiate page objects directly.
+
+- `pages.home`, `pages.login`, `pages.register`, `pages.docs`, `pages.swagger`
+- Each page object is lazily created on first access and memoized for the test's lifetime.
+- Adding a new page requires only a getter in `src/pages/pageFactory.ts` — no fixture changes needed.
+
 ### In Test Files
 
 ```typescript
-test('should register successfully', async ({ page }) => {
+test('should register successfully', async ({ page, pages }) => {
   // Arrange
-  const registerPage = new RegisterPage(page);
-  await registerPage.goto();
+  await pages.register.goto();
 
   // Act
-  await registerPage.register('test@example.com');
+  await pages.register.register('test@example.com');
 
   // Assert - ALL assertions in test file
-  await expect(registerPage.successMessage).toBeVisible();
+  await expect(pages.register.successMessage).toBeVisible();
   await expect(page).toHaveURL(/.*\/login\.html/);
 });
 ```
@@ -87,3 +94,6 @@ test('should register successfully', async ({ page }) => {
 - **Better test readability**: Expectations are visible in tests
 - **Easier maintenance**: Page Objects focus on UI structure
 - **Reusable components**: Page Objects work with different assertion scenarios
+- **Lazy instantiation**: Page objects are created only when accessed, avoiding unnecessary navigation
+- **Single fixture entry point**: `pages` fixture provides all page objects — no imports or manual construction in tests
+- **Scalable**: Adding a new page only requires a getter in `PageFactory`
