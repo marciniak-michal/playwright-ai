@@ -53,17 +53,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install app dependencies
-        run: npm ci --prefix app
-
-      - name: Start app
-        run: cd app && npm start &
-
-      - name: Wait for app
-        run: |
-          timeout 10s bash -c 'until curl -fsS http://localhost:3000/api/v1/healthcheck >/dev/null 2>&1; do sleep 1; done' || { echo "app failed to become ready in time" >&2; exit 1; }
-          echo "app is ready"
-
       - name: Resolve browser name
         id: browser
         run: |
