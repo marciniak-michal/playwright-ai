@@ -9,6 +9,7 @@ const logger = pino({
       colorize: true,
       translateTime: 'SYS:HH:MM:ss',
       ignore: 'pid,hostname',
+      sync: true,
     },
   },
 });
