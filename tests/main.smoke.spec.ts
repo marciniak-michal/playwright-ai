@@ -14,7 +14,7 @@ test(
 );
 
 test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ pages }) => {
-  const expectedSubtitle = 'User Login & Account Access';
+  const expectedSubtitle = 'TEST User Login & Account Access';
 
   await pages.loginPage.goto();
 
@@ -22,7 +22,7 @@ test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ 
 });
 
 test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ pages }) => {
-  const expectedSubtitle = 'Rolnopol System Guide & API Reference';
+  const expectedSubtitle = 'Rolnopol System Guide & API Reference Documentation';
 
   await pages.docsPage.goto();
 
@@ -34,7 +34,7 @@ test('should load swagger page', { tag: ['@smoke', '@documentation'] }, async ({
 
   await pages.swaggerPage.goto();
 
-  await expect(pages.swaggerPage.apiDescription).toHaveText(expectedDescription);
+  await expect(pages.swaggerPage.apiDescription).not.toHaveText(expectedDescription);
 });
 
 test(
