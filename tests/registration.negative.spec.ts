@@ -52,7 +52,7 @@ test.describe('Registration Negative Tests', () => {
       await pages.registerPage.submitButton.click();
 
       await expect(pages.registerPage.errorAlert).toHaveText(
-        'Password must be at least 3 characters'
+        'Password must be at least 4 characters'
       );
     }
   );
@@ -67,7 +67,7 @@ test.describe('Registration Negative Tests', () => {
       await pages.registerPage.submitButton.click();
 
       await expect(pages.registerPage.errorAlert).toHaveText(
-        'Display name must be at least 3 characters'
+        'Display name must be at least 3 characterss'
       );
     }
   );
@@ -105,7 +105,7 @@ test.describe('Registration Negative Tests', () => {
 
       await expect(pages.registerPage.errorAlert).toBeVisible();
       await expect(pages.registerPage.errorAlert).toContainText(
-        'User with this email already exists'
+        'TestUser with this email already exwerists'
       );
     }
   );
