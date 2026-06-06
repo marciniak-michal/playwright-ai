@@ -120,6 +120,22 @@ function applyFixes(fixes: AiFix[]): string[] {
   return changed;
 }
 
+function lintFixes(changedFiles: string[]): boolean {
+  const tsFiles = changedFiles.filter((f) => f.endsWith('.ts'));
+  if (tsFiles.length === 0) return true;
+
+  const fileArgs = tsFiles.map((f) => `"${f}"`).join(' ');
+  logger.info({ files: tsFiles }, 'Linting fixed files');
+  try {
+    execSync(`npx eslint --fix ${fileArgs}`, { stdio: 'inherit' });
+    logger.info('Lint passed');
+    return true;
+  } catch {
+    logger.warn('Lint failed on fixed files - skipping commit');
+    return false;
+  }
+}
+
 function verifyFixes(testFiles: string[]): boolean {
   const unique = [...new Set(testFiles)];
   const fileArgs = unique.map((f) => `"${f}"`).join(' ');
@@ -302,6 +318,10 @@ async function main(): Promise<void> {
     const source = fs.readFileSync(absPath, 'utf-8');
     logger.info({ file: filePath }, 'Changed file source');
     process.stdout.write(source + '\n');
+  }
+
+  if (!lintFixes(changedFiles)) {
+    return;
   }
 
   if (!verifyFixes(failingTestFiles)) {
