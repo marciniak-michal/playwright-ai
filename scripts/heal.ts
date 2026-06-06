@@ -126,7 +126,9 @@ function verifyFixes(testFiles: string[]): boolean {
   logger.info({ files: unique }, 'Verifying fixes');
   try {
     execSync(`npx playwright test ${fileArgs} --reporter=line`, { stdio: 'inherit' });
+    logger.info('────────────────────────────────────────────────────────────');
     logger.info('Verification passed - all fixed tests are green!');
+    logger.info('────────────────────────────────────────────────────────────');
     return true;
   } catch {
     logger.warn('Verification failed - tests still failing, skipping commit');
@@ -150,7 +152,7 @@ function createHealBranch(): string {
 function commitAndPush(changedFiles: string[], branch: string): boolean {
   logger.info({ branch, files: changedFiles }, 'Committing and pushing changes');
   const quoted = changedFiles.map((f) => `"${f}"`).join(' ');
-  logger.debug({ files: changedFiles }, 'Staging files for commit');
+  logger.info({ files: changedFiles }, 'Staging files for commit');
   exec(`git add ${quoted}`);
 
   // git diff --cached --quiet exits 0 when nothing is staged, 1 when there are staged changes.
