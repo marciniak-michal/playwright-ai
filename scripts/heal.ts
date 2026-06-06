@@ -298,7 +298,8 @@ async function main(): Promise<void> {
   for (const filePath of changedFiles) {
     const absPath = path.resolve(process.cwd(), filePath);
     const source = fs.readFileSync(absPath, 'utf-8');
-    logger.info({ file: filePath, source }, 'Changed file source');
+    logger.info({ file: filePath }, 'Changed file source');
+    process.stdout.write(source + '\n');
   }
 
   if (!verifyFixes(failingTestFiles)) {
