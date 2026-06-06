@@ -267,6 +267,11 @@ async function main(): Promise<void> {
     return;
   }
   logger.info({ count: changedFiles.length, files: changedFiles }, 'Files updated successfully');
+  for (const filePath of changedFiles) {
+    const absPath = path.resolve(process.cwd(), filePath);
+    const source = fs.readFileSync(absPath, 'utf-8');
+    logger.info({ file: filePath, source }, 'Changed file source');
+  }
 
   if (!verifyFixes(failingTestFiles)) {
     return;
