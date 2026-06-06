@@ -236,12 +236,40 @@ async function main(): Promise<void> {
   const failingTestFiles = contexts.map((ctx) => ctx.testFile);
   let allAnalysesSucceeded = true;
 
+  // In-memory cache tracking the latest patched content per file path.
+  // Seeded from the snapshots in failures.json so the first AI call for each
+  // file sees the same source that existed during the failing test run.
+  const fileCache = new Map<string, string>();
+  for (const ctx of contexts) {
+    if (!fileCache.has(ctx.testFile)) fileCache.set(ctx.testFile, ctx.testSource);
+    for (const po of ctx.pageObjects) {
+      if (!fileCache.has(po.filePath)) fileCache.set(po.filePath, po.source);
+    }
+  }
+
   logger.info({ count: contexts.length }, 'Processing failures');
   for (const ctx of contexts) {
     logger.info({ test: ctx.testTitle }, 'Analyzing test');
     try {
-      const result = await callAi(ctx);
+      // Build a context that reflects any fixes already applied to this file
+      // (or its page objects) by earlier iterations of this loop, so that
+      // multiple failing tests in the same file are all repaired rather than
+      // only the last one.
+      const patchedCtx: HealingContext = {
+        ...ctx,
+        testSource: fileCache.get(ctx.testFile) ?? ctx.testSource,
+        pageObjects: ctx.pageObjects.map((po) => ({
+          ...po,
+          source: fileCache.get(po.filePath) ?? po.source,
+        })),
+      };
+      const result = await callAi(patchedCtx);
       logger.info({ analysis: result.analysis }, 'AI analysis complete');
+      // Update the cache immediately so subsequent failures in the same file
+      // receive the already-patched content as their context.
+      for (const fix of result.fixes) {
+        fileCache.set(fix.filePath, fix.newContent);
+      }
       allFixes.push(...result.fixes);
       analyses.push(result.analysis);
     } catch (err) {
