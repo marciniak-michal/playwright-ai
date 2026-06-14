@@ -1,4 +1,4 @@
-import { expect, test } from '../src/fixtures';
+import { expect, test } from '../src/fixtures/index.fixture';
 import { generateUniqueEmail } from '../src/helpers/testDataHelper';
 
 test.describe('Registration Positive Tests', () => {

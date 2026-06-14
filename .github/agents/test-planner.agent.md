@@ -1,5 +1,4 @@
 ---
-title: 'Test plan from expert Senior Quality Assurance Engineer'
 name: 'test-planner'
 model: Claude Sonnet 4.5 (copilot)
 description: 'This chat mode is designed to assist in creating comprehensive test plans tailored for web applications.'
