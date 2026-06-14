@@ -1,4 +1,4 @@
-import { expect, test } from '../src/fixtures';
+import { expect, test } from '../src/fixtures/index.fixture';
 
 test(
   'should display page with Rolnopol title on homepage',

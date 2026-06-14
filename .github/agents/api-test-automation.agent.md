@@ -1,6 +1,6 @@
 ---
-name: 'api-test-automation-openapi'
-description: 'Generate REST API tests from an OpenAPI spec (language/framework provided by the user).'
+name: 'api-test-automation'
+description: 'description: Generate REST API tests from an OpenAPI spec (language/framework provided by the user).'
 tools: ['vscode', 'execute', 'read', 'agent', 'edit', 'search', 'web', 'todo']
 ---
 
@@ -16,8 +16,8 @@ Given an OpenAPI spec (file path or URL) AND a user-provided details generate pr
 
 # Required user inputs (must be present in the request)
 
-- language: the programming language (if not - use TypeScript)
-- framework: the test runner (check if project has existing tests and use that, otherwise ask user for preference)
+- language: TypeScript (if not- use what is used in project)
+- framework: Playwright the test runner (check if project has existing tests and use that, otherwise ask user for preference)
 - spec: path or URL to the OpenAPI document
 - scope: defines the breadth/depth of test coverage (e.g., "all endpoints", "only user-related endpoints", "just auth scenarios")
 
