@@ -16,6 +16,8 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.59.1-noble
       options: --ipc=host
     timeout-minutes: 10
+    env:
+      BASE_URL: ${{ vars.BASE_URL }}
     strategy:
       fail-fast: true
       matrix:
@@ -49,8 +51,6 @@ jobs:
 
       - name: Run tests Dev
         run: npx playwright test --project=${{ matrix.browser }}
-        env:
-          BASE_URL: ${{ vars.BASE_URL }}
 
       - name: Upload test failures artifact
         if: failure()

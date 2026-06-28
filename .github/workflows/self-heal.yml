@@ -3,7 +3,7 @@ name: Self-Heal Tests
 on:
   # Automatically triggered when the main test workflow fails.
   workflow_run:
-    workflows: ['Playwright Tests']
+    workflows: ['Playwright Tests Dev']
     types: [completed]
   # Can also be triggered manually (useful for local testing of the pipeline).
   workflow_dispatch:
@@ -24,6 +24,9 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       github.event.workflow_run.conclusion == 'failure'
     runs-on: ubuntu-latest
+    environment: dev
+    env:
+      BASE_URL: ${{ vars.BASE_URL }}
     container:
       image: mcr.microsoft.com/playwright:v1.59.1-noble
       options: --ipc=host
