@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import 'dotenv/config';
 
 export default defineConfig({
   testDir: './tests',
@@ -18,7 +19,7 @@ export default defineConfig({
     ['github'],
   ],
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    baseURL: process.env.BASE_URL,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },

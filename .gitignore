@@ -9,3 +9,6 @@ node_modules/
 .playwright-mcp/
 *.png
 .ai-temp/
+.env
+.env.*
+!.env.example

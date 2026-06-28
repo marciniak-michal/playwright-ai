@@ -14,6 +14,12 @@ npm install
 npm run install:browsers
 ```
 
+## Environment Variables
+
+- `BASE_URL`
+- `E2E_LOGIN_EMAIL`
+- `E2E_LOGIN_PASSWORD`
+
 ## Usage
 
 | Command | Description |

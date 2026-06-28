@@ -4,7 +4,7 @@ import { BasePage } from './base.page';
 
 /** Page object for the registration flow, including form submission helpers. */
 export class RegisterPage extends BasePage {
-  protected readonly PAGE_URL = PAGE_URLS.REGISTER;
+  readonly PAGE_URL = PAGE_URLS.REGISTER;
   readonly emailInput: Locator;
   readonly displayNameInput: Locator;
   readonly passwordInput: Locator;

@@ -4,7 +4,7 @@ import { BasePage } from './base.page';
 
 /** Page object for the documentation screen. */
 export class DocsPage extends BasePage {
-  protected readonly PAGE_URL = PAGE_URLS.DOCS;
+  readonly PAGE_URL = PAGE_URLS.DOCS;
   readonly headerSubtitle: Locator;
 
   constructor(page: Page) {

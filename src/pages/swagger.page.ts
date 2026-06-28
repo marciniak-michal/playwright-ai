@@ -4,7 +4,7 @@ import { BasePage } from './base.page';
 
 /** Page object for the embedded Swagger UI. */
 export class SwaggerPage extends BasePage {
-  protected readonly PAGE_URL = PAGE_URLS.SWAGGER;
+  readonly PAGE_URL = PAGE_URLS.SWAGGER;
   readonly apiDescription: Locator;
 
   constructor(page: Page) {

@@ -2,6 +2,7 @@ import { type Page } from '@playwright/test';
 import { DocsPage } from './docs.page';
 import { HomePage } from './home.page';
 import { LoginPage } from './login.page';
+import { ProfilePage } from './profile.page';
 import { RegisterPage } from './register.page';
 import { SwaggerPage } from './swagger.page';
 
@@ -15,6 +16,7 @@ export class PageFactory {
   private _homePage?: HomePage;
   private _loginPage?: LoginPage;
   private _registerPage?: RegisterPage;
+  private _profilePage?: ProfilePage;
   private _docsPage?: DocsPage;
   private _swaggerPage?: SwaggerPage;
 
@@ -32,6 +34,10 @@ export class PageFactory {
 
   get registerPage(): RegisterPage {
     return (this._registerPage ??= new RegisterPage(this._page));
+  }
+
+  get profilePage(): ProfilePage {
+    return (this._profilePage ??= new ProfilePage(this._page));
   }
 
   get docsPage(): DocsPage {
