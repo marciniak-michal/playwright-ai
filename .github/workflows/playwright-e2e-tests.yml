@@ -18,6 +18,8 @@ jobs:
     timeout-minutes: 10
     env:
       BASE_URL: ${{ vars.BASE_URL }}
+      E2E_LOGIN_EMAIL: ${{ secrets.E2E_LOGIN_EMAIL }}
+      E2E_LOGIN_PASSWORD: ${{ secrets.E2E_LOGIN_PASSWORD }}
     strategy:
       fail-fast: true
       matrix:
@@ -29,11 +31,17 @@ jobs:
 
       - name: Validate required variables
         run: |
-          if [ -z "$BASE_URL" ]; then
-            echo "::error::BASE_URL is not set. Configure it in the 'dev' GitHub environment."
+          missing=()
+          [ -z "$BASE_URL" ]          && missing+=("BASE_URL")
+          [ -z "$E2E_LOGIN_EMAIL" ]    && missing+=("E2E_LOGIN_EMAIL")
+          [ -z "$E2E_LOGIN_PASSWORD" ] && missing+=("E2E_LOGIN_PASSWORD")
+          if [ ${#missing[@]} -gt 0 ]; then
+            for var in "${missing[@]}"; do
+              echo "::error::$var is not set. Configure it in the 'dev' GitHub environment."
+            done
             exit 1
           fi
-          echo "BASE_URL is configured."
+          echo "All required variables are configured."
 
       - name: Cache npm packages
         uses: actions/cache@v5

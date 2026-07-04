@@ -1,6 +1,6 @@
 import { expect, test } from '../src/fixtures/index.fixture';
 
-function getRequiredEnvVar(name: 'E2E_LOGIN_EMAIL' | 'E2E_LOGIN_PASSWORD'): string {
+function getRequiredEnvVar(name: string): string {
   const value = process.env[name];
   if (!value) {
     throw new Error(`Missing required env var: ${name}. Add it to .env.`);
