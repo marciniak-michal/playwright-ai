@@ -29,20 +29,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Validate required variables
-        run: |
-          missing=()
-          [ -z "$BASE_URL" ]          && missing+=("BASE_URL")
-          [ -z "$E2E_LOGIN_EMAIL" ]    && missing+=("E2E_LOGIN_EMAIL")
-          [ -z "$E2E_LOGIN_PASSWORD" ] && missing+=("E2E_LOGIN_PASSWORD")
-          if [ ${#missing[@]} -gt 0 ]; then
-            for var in "${missing[@]}"; do
-              echo "::error::$var is not set. Configure it in the 'dev' GitHub environment."
-            done
-            exit 1
-          fi
-          echo "All required variables are configured."
-
       - name: Cache npm packages
         uses: actions/cache@v5
         with:
