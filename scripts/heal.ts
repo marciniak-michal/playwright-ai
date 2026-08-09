@@ -44,14 +44,27 @@ async function callAi(context: HealingContext): Promise<AiResponse> {
     : '';
 
   const prompt = `You are a Playwright test repair agent.
+
+## STRICT RULES — READ BEFORE ANYTHING ELSE
+- CRITICAL: When fixing a file (especially a page object, e.g. login.page.ts), preserve its ENTIRE existing structure. All imports, class inheritance (e.g. \`extends BasePage\`), constructor parameters, class properties, methods, and any unrelated locators or logic must remain byte-for-byte identical. ONLY change the single broken locator string or value. Do NOT rewrite, simplify, or restructure the file. Do NOT add new imports, methods, properties, or comments. The \`newContent\` must be a minimally-diffed version of the original source with only the failing locator or value corrected.
+- Follow the Page Object Pattern: locators belong in page object files; assertions stay in test files — never add expect() to a page object.
+- Fix only locators, text values, or selectors directly related to the reported error.
+- If the DOM tree is provided, treat it as ground truth and update the test or page object to match it.
+- If expected text in the test looks garbled or nonsensical, treat it as a test typo and replace it with the actual value from the DOM.
+- If the assertion logic is incorrect (e.g. \`.not.toBeVisible()\` when the element is actually visible), correct the matcher or negation.
+- If a locator in a page object does not match any element in the DOM but the element clearly exists, fix only the locator string in the page object — do NOT touch the test file.
+- When fixing a locator, prefer the most stable selector: \`data-testid\` > ARIA role > visible label/text > CSS class. Do not invent selectors absent from the DOM tree.
+- Do not recommend running tests. Only provide code fixes.
+- Return ONLY valid JSON matching the schema at the end — no markdown, no explanation outside JSON.
+
+## Failing Test Context
+
 A test has failed. There are four possible root causes — identify which applies and fix it:
 
 1. **UI changed**: A locator, test-id, or visible text no longer matches because the app was updated.
 2. **Test typo**: A wrong or garbled string in the test file (e.g. \`'UserwqefTEs Login'\`) that doesn't match what the DOM actually shows.
 3. **Wrong assertion logic**: The \`expect()\` matcher or \`.not\` negation is incorrect given what the page actually shows.
 4. **PageObject locator typo**: A locator in a page object is wrong (bad selector, wrong \`data-testid\`, etc.) even though the element exists in the DOM. Fix the locator in the page object only — do NOT touch the test file.
-
-Your task: identify the root cause and return the corrected TypeScript source for the affected file(s).
 
 ${domTreeSection}
 
@@ -68,21 +81,11 @@ ${context.errorMessage}
 ${context.errorLine}
 \`\`\`
 
-## Rules
-- CRITICAL: When fixing a file (especially POM file e.g. login.page.ts), preserve its ENTIRE existing structure! — all imports, class inheritance (e.g. \`extends BasePage\`), constructor parameters, class properties, methods, and any unrelated locators or logic. ONLY change the single broken locator string or value. Do NOT rewrite, simplify, or restructure the file in any way. The \`newContent\` must be a minimally-diffed version of the original source with only the failing locator or value corrected.
-- Do not recommend to run tests again. Only provide code fixes.
-- Fix locators, text values, or selectors directly related to the reported error — whether the mismatch is caused by a UI change, a typo in the test, or a bad locator in a page object.
-- If the DOM tree is provided, treat the text/structure found in the DOM as the ground truth and update the test or page object to match it.
-- If expected text in the test looks garbled or nonsensical (e.g. random characters mixed in), treat it as a test typo and replace it with the actual value from the DOM.
-- If the assertion logic is incorrect (e.g. \`.not.toBeVisible()\` when the element is actually visible, or a wrong matcher like \`.toBeHidden()\` instead of \`.toBeVisible()\`), correct the matcher or remove/add the \`.not\` negation to reflect what the page actually shows.
-- If a locator in a page object file does not match any element in the DOM tree but the element clearly exists (e.g. the error is "locator not found" or "strict mode violation" and the DOM shows the element), treat it as a PageObject locator typo. Fix only the locator string in the page object file; do NOT touch the test file.
-- When fixing a locator, prefer the most stable selector available in the DOM: \`data-testid\` > ARIA role > visible label/text > CSS class. Do not invent selectors that are not present in the DOM tree.
-- Do NOT change test logic, add comments, or refactor anything unrelated to the failure.
-- Follow the Page Object Pattern: locators belong in page object files; assertions stay in test files.
-- Return ONLY valid JSON matching this exact schema — no markdown, no explanation outside JSON:
+## Response Schema
+Return ONLY valid JSON — no markdown, no explanation outside JSON:
 
 {
-  "analysis": "<one sentence: what the root cause was — UI change, test typo, or wrong assertion logic — and what was corrected>",
+  "analysis": "<one sentence: what the root cause was and what was corrected>",
   "fixes": [
     { "filePath": "<relative path>", "newContent": "<full corrected file content as a string>" }
   ]
