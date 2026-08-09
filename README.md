@@ -1,6 +1,6 @@
 # playwright-ai
 
-Test Automation Framework built with Playwright and use of AI
+Test Automation Framework built with Playwright and use of the AI
 
 ## Prerequisites
 
@@ -22,12 +22,12 @@ npm run install:browsers
 
 ## Usage
 
-| Command | Description |
-|---------|-------------|
-| `npm test` | Run all tests (headless) |
+| Command               | Description                      |
+| --------------------- | -------------------------------- |
+| `npm test`            | Run all tests (headless)         |
 | `npm run test:headed` | Run tests with a visible browser |
-| `npm run test:debug` | Step-by-step debugger |
-| `npm run test:report` | Open the last HTML report |
+| `npm run test:debug`  | Step-by-step debugger            |
+| `npm run test:report` | Open the last HTML report        |
 
 Run a specific file:
 
