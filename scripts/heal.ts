@@ -69,7 +69,7 @@ ${context.errorLine}
 \`\`\`
 
 ## Rules
-- CRITICAL: When fixing a POM file, preserve its ENTIRE existing structure! — all imports, class inheritance (e.g. \`extends BasePage\`), constructor parameters, class properties, methods, and any unrelated locators or logic. ONLY change the single broken locator string or value. Do NOT rewrite, simplify, or restructure the file in any way. The \`newContent\` must be a minimally-diffed version of the original source with only the failing locator or value corrected.
+- CRITICAL: When fixing a file (especially POM file e.g. login.page.ts), preserve its ENTIRE existing structure! — all imports, class inheritance (e.g. \`extends BasePage\`), constructor parameters, class properties, methods, and any unrelated locators or logic. ONLY change the single broken locator string or value. Do NOT rewrite, simplify, or restructure the file in any way. The \`newContent\` must be a minimally-diffed version of the original source with only the failing locator or value corrected.
 - Do not recommend to run tests again. Only provide code fixes.
 - Fix locators, text values, or selectors directly related to the reported error — whether the mismatch is caused by a UI change, a typo in the test, or a bad locator in a page object.
 - If the DOM tree is provided, treat the text/structure found in the DOM as the ground truth and update the test or page object to match it.
