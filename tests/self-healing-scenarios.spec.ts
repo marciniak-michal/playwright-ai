@@ -7,7 +7,7 @@ test.describe('Klasa 1', () => {
     async ({ page, pages }) => {
       await pages.loginPage.goto();
 
-      await expect(page.getByTestId('user-email-field')).toBeVisible();
+      await expect(page.getByTestId('email-input')).toBeVisible();
     }
   );
 
@@ -17,7 +17,7 @@ test.describe('Klasa 1', () => {
     async ({ page, pages }) => {
       await pages.loginPage.goto();
 
-      await expect(page.getByTestId('user-password-field')).toBeVisible();
+      await expect(page.getByTestId('password-input')).toBeVisible();
     }
   );
 
@@ -27,7 +27,7 @@ test.describe('Klasa 1', () => {
     async ({ page, pages }) => {
       await pages.loginPage.goto();
 
-      await expect(page.getByTestId('btn-login')).toBeVisible();
+      await expect(page.getByTestId('login-submit-btn')).toBeVisible();
     }
   );
 
@@ -37,7 +37,7 @@ test.describe('Klasa 1', () => {
     async ({ page, pages }) => {
       await pages.registerPage.goto();
 
-      await expect(page.getByTestId('name-input')).toBeVisible();
+      await expect(page.getByTestId('display-name-input')).toBeVisible();
     }
   );
 
@@ -47,7 +47,7 @@ test.describe('Klasa 1', () => {
     async ({ page, pages }) => {
       await pages.registerPage.goto();
 
-      await expect(page.getByTestId('btn-register')).toBeVisible();
+      await expect(page.getByTestId('register-submit-btn')).toBeVisible();
     }
   );
 });
