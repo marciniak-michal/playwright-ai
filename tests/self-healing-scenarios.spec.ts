@@ -1,6 +1,6 @@
 import { expect, test } from '../src/fixtures/index.fixture';
 
-test.describe('Klasa 1 — data-testid attribute change', () => {
+test.describe('Klasa 1', () => {
   test(
     'should locate email input on login page by data-testid',
     { tag: ['@auth', '@regression'] },
@@ -52,7 +52,7 @@ test.describe('Klasa 1 — data-testid attribute change', () => {
   );
 });
 
-test.describe('Klasa 2 — Visible text change', () => {
+test.describe('Klasa 2', () => {
   test(
     'should display correct subtitle on login page',
     { tag: ['@auth', '@regression'] },
@@ -108,7 +108,7 @@ test.describe('Klasa 2 — Visible text change', () => {
   );
 });
 
-test.describe('Klasa 3 — ARIA role / semantic structure change', () => {
+test.describe('Klasa 3', () => {
   test(
     'should find register submit button by ARIA role and accessible name',
     { tag: ['@auth', '@regression'] },
@@ -163,7 +163,7 @@ test.describe('Klasa 3 — ARIA role / semantic structure change', () => {
   );
 });
 
-test.describe('Klasa 4 — DOM hierarchy change', () => {
+test.describe('Klasa 4', () => {
   test(
     'should find email input scoped within the login form element',
     { tag: ['@auth', '@regression'] },
@@ -221,7 +221,7 @@ test.describe('Klasa 4 — DOM hierarchy change', () => {
   );
 });
 
-test.describe('Klasa 5 — Combined change', () => {
+test.describe('Klasa 5', () => {
   test(
     'should display correct subtitle and an enabled submit button on login page',
     { tag: ['@auth', '@regression'] },
@@ -281,12 +281,7 @@ test.describe('Klasa 5 — Combined change', () => {
   );
 });
 
-// These tests are intentionally broken: the .not modifier is applied to an
-// assertion that should pass without it. They simulate a developer mistake
-// and are used to verify that the self-healing AI can detect and remove an
-// incorrect negation without modifying the application code.
-
-test.describe('Klasa 6 — Wrong assertion negation', () => {
+test.describe('Klasa 6', () => {
   test(
     '[intentionally broken] register submit button should not be visible',
     { tag: ['@auth', '@negative'] },
@@ -338,7 +333,7 @@ test.describe('Klasa 6 — Wrong assertion negation', () => {
   );
 });
 
-test.describe('Klasa 8 — Typo in test source', () => {
+test.describe('Klasa 8', () => {
   test(
     '[intentionally broken] should display correct subtitle on login page',
     { tag: ['@auth', '@negative'] },
