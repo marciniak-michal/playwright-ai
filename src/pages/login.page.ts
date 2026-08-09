@@ -1,26 +1,21 @@
-import { type Locator, Page } from '@playwright/test';
-import { PAGE_URLS } from '../constants/pageUrls';
-import { BasePage } from './base.page';
+import { Page } from '@playwright/test';
 
-/** Page object for the login screen. */
-export class LoginPage extends BasePage {
-  readonly PAGE_URL = PAGE_URLS.LOGIN;
-  readonly subtitle: Locator;
-  readonly emailInput: Locator;
-  readonly passwordInput: Locator;
-  readonly submitButton: Locator;
+export class LoginPage {
+  constructor(private readonly page: Page) {}
 
-  constructor(page: Page) {
-    super(page);
-    this.subtitle = page.getByTestId('login-subtitle');
-    this.emailInput = page.getByTestId('email-input');
-    this.passwordInput = page.getByTestId('password-input');
-    this.submitButton = page.getByTestId('login-submit-btn');
+  async goto() {
+    await this.page.goto('/login.html');
   }
 
-  async login(email: string, password: string) {
-    await this.emailInput.fill(email);
-    await this.passwordInput.fill(password);
-    await this.submitButton.click();
+  get emailInput() {
+    return this.page.getByTestId('email-input');
+  }
+
+  get passwordInput() {
+    return this.page.getByTestId('password-input');
+  }
+
+  get submitButton() {
+    return this.page.getByTestId('login-submit-btn');
   }
 }
