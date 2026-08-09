@@ -52,7 +52,9 @@ async function callAi(context: HealingContext): Promise<AiResponse> {
 - If the DOM tree is provided, treat it as ground truth and update the test or page object to match it.
 - If expected text in the test looks garbled or nonsensical, treat it as a test typo and replace it with the actual value from the DOM.
 - If the assertion logic is incorrect (e.g. \`.not.toBeVisible()\` when the element is actually visible), correct the matcher or negation.
-- If a locator in a page object does not match any element in the DOM but the element clearly exists, fix only the locator string in the page object — do NOT touch the test file.
+- CRITICAL — locator fix target: examine WHERE the failing locator is defined before deciding which file to change.
+  - If the failing \`expect()\` obtains the locator directly from \`page\` (e.g. \`page.getByTestId(...)\`, \`page.getByRole(...)\`, \`page.locator(...)\`), the wrong value is in the TEST FILE — fix it there, do NOT touch any page object.
+  - Only fix a page object when the failing locator is accessed through a page object property (e.g. \`pages.loginPage.emailInput\`, \`this.submitButton\`). In that case fix the page object and do NOT touch the test file.
 - When fixing a locator, prefer the most stable selector: \`data-testid\` > ARIA role > visible label/text > CSS class. Do not invent selectors absent from the DOM tree.
 - Do not recommend running tests. Only provide code fixes.
 - Return ONLY valid JSON matching the schema at the end — no markdown, no explanation outside JSON.
