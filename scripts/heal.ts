@@ -78,6 +78,7 @@ ${context.errorLine}
 - When fixing a locator, prefer the most stable selector available in the DOM: \`data-testid\` > ARIA role > visible label/text > CSS class. Do not invent selectors that are not present in the DOM tree.
 - Do NOT change test logic, add comments, or refactor anything unrelated to the failure.
 - Follow the Page Object Pattern: locators belong in page object files; assertions stay in test files.
+- CRITICAL: When fixing a file, preserve its ENTIRE existing structure — all imports, class inheritance (e.g. \`extends BasePage\`), constructor parameters, class properties, methods, and any unrelated locators or logic. Only change the single broken locator string or value. Do NOT rewrite, simplify, or restructure the file in any way. The \`newContent\` must be a minimally-diffed version of the original source with only the failing locator or value corrected.
 - Return ONLY valid JSON matching this exact schema — no markdown, no explanation outside JSON:
 
 {
