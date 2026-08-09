@@ -20,29 +20,108 @@ export interface HealingContext {
 }
 
 function extractPageObjectPaths(source: string, fromFile: string): string[] {
-  const importRegex = /from\s+['"]([^'"]+)['"]/g;
-  const dir = path.dirname(fromFile);
-  const found = new Set<string>();
+  // Step 1: Detect which `pages.xxx` properties are used in the test
+  const usedProps = new Set<string>();
+  const propUsageRegex = /\bpages\.(\w+)/g;
+  let m: RegExpExecArray | null;
+  while ((m = propUsageRegex.exec(source)) !== null) {
+    usedProps.add(m[1]);
+  }
 
-  let match: RegExpExecArray | null;
-  while ((match = importRegex.exec(source)) !== null) {
-    const specifier = match[1];
-    if (!specifier.startsWith('.')) continue;
+  // Step 2: Traverse imports transitively to locate pageFactory.ts
+  let pageFactoryPath: string | undefined;
+  const visited = new Set<string>();
 
-    const candidates = [
-      path.resolve(dir, specifier + '.ts'),
-      path.resolve(dir, specifier, 'index.ts'),
-    ];
+  function walkImports(src: string, file: string): void {
+    if (visited.has(file)) return;
+    visited.add(file);
 
-    for (const candidate of candidates) {
-      if (fs.existsSync(candidate) && candidate.split(path.sep).includes('pages')) {
-        found.add(candidate);
+    const dir = path.dirname(file);
+    const importRegex = /from\s+['"]([^'"]+)['"]/g;
+    let match: RegExpExecArray | null;
+
+    while ((match = importRegex.exec(src)) !== null) {
+      const specifier = match[1];
+      if (!specifier.startsWith('.')) continue;
+
+      for (const candidate of [
+        path.resolve(dir, specifier + '.ts'),
+        path.resolve(dir, specifier, 'index.ts'),
+      ]) {
+        if (!fs.existsSync(candidate)) continue;
+
+        if (path.basename(candidate, '.ts') === 'pageFactory') {
+          pageFactoryPath ??= candidate;
+        } else {
+          walkImports(fs.readFileSync(candidate, 'utf-8'), candidate);
+        }
         break;
       }
     }
   }
 
-  return [...found];
+  walkImports(source, fromFile);
+
+  // Step 3: If pageFactory found and pages.xxx usages detected, resolve only used PO files
+  if (pageFactoryPath && usedProps.size > 0) {
+    const factorySource = fs.readFileSync(pageFactoryPath, 'utf-8');
+    const factoryDir = path.dirname(pageFactoryPath);
+
+    // Map class name -> absolute file path from factory imports
+    const classToFile = new Map<string, string>();
+    const factoryImportRegex = /import\s+\{\s*([^}]+)\s*\}\s+from\s+['"]([^'"]+)['"]/g;
+    while ((m = factoryImportRegex.exec(factorySource)) !== null) {
+      const specifier = m[2];
+      if (!specifier.startsWith('.')) continue;
+      for (const candidate of [
+        path.resolve(factoryDir, specifier + '.ts'),
+        path.resolve(factoryDir, specifier, 'index.ts'),
+      ]) {
+        if (fs.existsSync(candidate)) {
+          for (const cls of m[1].split(',').map((s) => s.trim())) {
+            classToFile.set(cls, candidate);
+          }
+          break;
+        }
+      }
+    }
+
+    // Map getter name -> return type class name
+    const getterToClass = new Map<string, string>();
+    const getterRegex = /get\s+(\w+)\s*\(\s*\)\s*:\s*(\w+)/g;
+    while ((m = getterRegex.exec(factorySource)) !== null) {
+      getterToClass.set(m[1], m[2]);
+    }
+
+    // Return only file paths for actually used props
+    const found: string[] = [];
+    for (const prop of usedProps) {
+      const cls = getterToClass.get(prop);
+      if (!cls) continue;
+      const filePath = classToFile.get(cls);
+      if (filePath) found.push(filePath);
+    }
+    return found;
+  }
+
+  // Fallback: return page object files directly imported by the test
+  const directFound = new Set<string>();
+  const dir = path.dirname(fromFile);
+  const directImportRegex = /from\s+['"]([^'"]+)['"]/g;
+  while ((m = directImportRegex.exec(source)) !== null) {
+    const specifier = m[1];
+    if (!specifier.startsWith('.')) continue;
+    for (const candidate of [
+      path.resolve(dir, specifier + '.ts'),
+      path.resolve(dir, specifier, 'index.ts'),
+    ]) {
+      if (fs.existsSync(candidate) && candidate.split(path.sep).includes('pages')) {
+        directFound.add(candidate);
+        break;
+      }
+    }
+  }
+  return [...directFound];
 }
 
 type FailureEntry = Omit<HealingContext, 'testSource' | 'pageObjects'>;
