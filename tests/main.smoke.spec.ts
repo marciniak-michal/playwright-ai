@@ -18,7 +18,7 @@ test('should load login page', { tag: ['@auth', '@smoke', '@login'] }, async ({ 
 
   await pages.loginPage.goto();
 
-  await expect(pages.loginPage.subtitle).toHaveText(expectedSubtitle);
+  await expect(pages.loginPage.page.getByTestId('login-subtitle')).toHaveText(expectedSubtitle);
 });
 
 test('should load docs page', { tag: ['@smoke', '@documentation'] }, async ({ pages }) => {
