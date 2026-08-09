@@ -7,7 +7,7 @@ type Fixtures = {
 
 const SKIP_TAGS = new Set(['script', 'style', 'noscript', 'template', 'svg', 'path', 'defs']);
 const CAPTURED_ATTRS = ['id', 'class', 'data-testid', 'role', 'name', 'type', 'href'];
-const MAX_DEPTH = 4;
+const MAX_DEPTH = 7;
 const MAX_CHILDREN = 5;
 const MAX_TEXT_LENGTH = 60;
 
