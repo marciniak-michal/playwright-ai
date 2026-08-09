@@ -9,13 +9,11 @@ export interface PageObjectSource {
 
 export interface HealingContext {
   testTitle: string;
-  /** Workspace-relative path to the test file (forward slashes). */
   testFile: string;
   testLine: number;
   errorMessage: string;
   errorLine: number;
   tags: string[];
-  /** Simplified DOM tree of the page captured at the moment of failure. */
   domTree?: Record<string, unknown>;
   testSource: string;
   pageObjects: PageObjectSource[];
