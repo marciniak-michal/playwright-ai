@@ -1,53 +1,33 @@
 import { expect, test } from '../src/fixtures/index.fixture';
 
 test.describe('Klasa 1', () => {
-  test(
-    'should locate email input on login page by data-testid',
-    { tag: ['@auth', '@regression'] },
-    async ({ page, pages }) => {
-      await pages.loginPage.goto();
+  test('should locate submit button', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
 
-      await expect(page.getByTestId('user-email-field')).toBeVisible();
-    }
-  );
+    await expect(pages.registerPage.submitButton).toBeVisible();
+  });
 
-  test(
-    'should locate password input on login page by data-testid',
-    { tag: ['@auth', '@regression'] },
-    async ({ page, pages }) => {
-      await pages.loginPage.goto();
+  test('should locate display name input', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
 
-      await expect(page.getByTestId('user-password-field')).toBeVisible();
-    }
-  );
+    await expect(pages.registerPage.displayNameInput).toBeVisible();
+  });
 
-  test(
-    'should locate submit button on login page by data-testid',
-    { tag: ['@auth', '@regression'] },
-    async ({ page, pages }) => {
-      await pages.loginPage.goto();
+  test('should locate email input', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
 
-      await expect(page.getByTestId('btn-login')).toBeVisible();
-    }
-  );
+    await expect(pages.registerPage.emailInput).toBeVisible();
+  });
 
-  test(
-    'should locate display name input on register page by data-testid',
-    { tag: ['@auth', '@regression'] },
-    async ({ page, pages }) => {
-      await pages.registerPage.goto();
+  test('should locate display name label', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
 
-      await expect(page.getByTestId('name-input')).toBeVisible();
-    }
-  );
+    await expect(pages.registerPage.displayNameLabel).toBeVisible();
+  });
 
-  test(
-    'should locate submit button on register page by data-testid',
-    { tag: ['@auth', '@regression'] },
-    async ({ page, pages }) => {
-      await pages.registerPage.goto();
+  test('should locate login here link', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
 
-      await expect(page.getByTestId('btn-register')).toBeVisible();
-    }
-  );
+    await expect(pages.registerPage.loginHereLink).toBeVisible();
+  });
 });
