@@ -53,11 +53,12 @@ async function callAi(context: HealingContext): Promise<AiResponse> {
 - If expected text in the test looks garbled or nonsensical, treat it as a test typo and replace it with the actual value from the DOM.
 - If the assertion logic is incorrect (e.g. \`.not.toBeVisible()\` when the element is actually visible), correct the matcher or negation.
 - CRITICAL — locator fix target: examine WHERE the failing locator is defined before deciding which file to change.
-  - If the failing \`expect()\` obtains the locator directly from \`page\` (e.g. \`page.getByTestId(...)\`, \`page.getByRole(...)\`, \`page.locator(...)\`), the wrong value is in the TEST FILE — fix it there, do NOT touch any page object.
-  - Only fix a page object when the failing locator is accessed through a page object property (e.g. \`pages.loginPage.emailInput\`, \`this.submitButton\`). In that case fix the page object and do NOT touch the test file.
-- When fixing a locator, prefer the most stable selector: \`data-testid\` > ARIA role > visible label/text > CSS class. Do not invent selectors absent from the DOM tree.
-- Do not recommend running tests. Only provide code fixes.
-- Return ONLY valid JSON matching the schema at the end — no markdown, no explanation outside JSON.
+  - If the failing \`expect()\` obtains the locator directly from \`page\` (e.g. \`page.getByTestId(...)\, \`page.getByRole(...)\, \`page.locator(...)\'\`), the wrong value is in the TEST FILE — fix it there, do NOT touch any page object.
+  - Only fix a page object when the failing locator is accessed through a page object property (e.g. \`pages.loginPage.emailInput\`\, \`this.submitButton\`). In that case fix the page object and do NOT touch the test file.
+  - When fixing a locator, prefer the most stable selector: \`data-testid\` > ARIA role > visible label/text > CSS class. Do not invent selectors absent from the DOM tree.
+  - Prefer changing only the locator value: when possible, modify only the selector string or value and do NOT change the locator method. For example, if the code uses \`page.locator(...)\`, do not replace it with \`page.getByTestId(...)\` or \`page.getByRole(...)\`; preserve the original locator call and adjust only its argument(s).
+  - Do not recommend running tests. Only provide code fixes.
+  - Return ONLY valid JSON matching the schema at the end — no markdown, no explanation outside JSON.
 
 ## Failing Test Context
 
