@@ -17,15 +17,15 @@ export class RegisterPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.emailInput = page.getByTestId('form-input-email');
-    this.displayNameLabel = page.locator('label[for="displayNameLabel"]');
-    this.displayNameInput = page.locator('#displayNameInput');
+    this.emailInput = page.getByTestId('email-input');
+    this.displayNameLabel = page.locator('label[for="displayedName"]');
+    this.displayNameInput = page.locator('#displayedName');
     this.passwordInput = page.getByTestId('password-input');
-    this.submitButton = page.locator('button.submit-button');
+    this.submitButton = page.locator('button[data-testid="register-submit-btn"]');
     this.successMessage = page.getByText('Registration successful!');
     this.errorAlert = page.locator('[role="alert"]');
     this.subtitle = page.getByTestId('register-subtitle');
-    this.loginHereLink = page.getByRole('button', { name: 'Login here' });
+    this.loginHereLink = page.getByRole('link', { name: 'Login here' });
   }
 
   async register(email: string, password: string, displayName?: string) {
