@@ -4,37 +4,37 @@ test.describe('Klasa 2 — Visible text change', () => {
   test('Case 1', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.subtitle).toHaveText('Here Create Your User Account');
+    await expect(pages.registerPage.subtitle).toHaveText('Create Your User Account');
   });
 
   test('Case 2', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.subtitle).toHaveText('Create Your User Account Here');
+    await expect(pages.registerPage.subtitle).toHaveText('Create Your User Account');
   });
 
   test('Case 3', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.subtitle).toHaveText('Create Here Your User Account');
+    await expect(pages.registerPage.subtitle).toHaveText('Create Your User Account');
   });
 
   test('Case 4', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.subtitle).toHaveText('Create Your Userr Account');
+    await expect(pages.registerPage.subtitle).toHaveText('Create Your User Account');
   });
 
   test('Case 5', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.subtitle).toHaveText('Cratte your Users Accooun');
+    await expect(pages.registerPage.subtitle).toHaveText('Create Your User Account');
   });
 
   test('Case 6', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.subtitle).toHaveText('Here you can make page profile');
+    await expect(pages.registerPage.subtitle).toHaveText('Create Your User Account');
   });
 
   test('Case 7', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
@@ -43,3 +43,4 @@ test.describe('Klasa 2 — Visible text change', () => {
     await expect(pages.registerPage.backToHomeLink).toHaveText(pages.registerPage.backToHomeText);
   });
 });
+

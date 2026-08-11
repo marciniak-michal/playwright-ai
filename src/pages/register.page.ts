@@ -16,7 +16,7 @@ export class RegisterPage extends BasePage {
   readonly loginHereLink: Locator;
   readonly backToHomeLink: Locator;
 
-  readonly backToHomeText = 'Backk to home';
+  readonly backToHomeText = 'Back to Home';
 
   constructor(page: Page) {
     super(page);
