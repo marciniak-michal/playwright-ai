@@ -40,6 +40,6 @@ test.describe('Klasa 2 — Visible text change', () => {
   test('Case 7', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.subtitle).toHaveText(pages.registerPage.backToHomeText);
+    await expect(pages.registerPage.backToHomeLink).toHaveText(pages.registerPage.backToHomeText);
   });
 });
