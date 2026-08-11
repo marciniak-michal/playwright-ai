@@ -1,33 +1,45 @@
 import { expect, test } from '../src/fixtures/index.fixture';
 
-test.describe('Klasa 1', () => {
-  test('should locate submit button', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+test.describe('Klasa 2 — Visible text change', () => {
+  test('Case 1', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.submitButton).toBeVisible();
+    await expect(pages.registerPage.subtitle).toHaveText('Here Create Your User Account');
   });
 
-  test('should locate display name input', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+  test('Case 2', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.displayNameInput).toBeVisible();
+    await expect(pages.registerPage.subtitle).toHaveText('Create Your User Account Here');
   });
 
-  test('should locate email input', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+  test('Case 3', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.emailInput).toBeVisible();
+    await expect(pages.registerPage.subtitle).toHaveText('Create Here Your User Account');
   });
 
-  test('should locate display name label', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+  test('Case 4', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.displayNameLabel).toBeVisible();
+    await expect(pages.registerPage.subtitle).toHaveText('Create Your Userr Account');
   });
 
-  test('should locate login here link', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+  test('Case 5', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.loginHereLink).toBeVisible();
+    await expect(pages.registerPage.subtitle).toHaveText('Cratte your Users Accooun');
+  });
+
+  test('Case 6', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
+
+    await expect(pages.registerPage.subtitle).toHaveText('Here you can make page profile');
+  });
+
+  test('Case 7', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
+
+    await expect(pages.registerPage.subtitle).toHaveText(pages.registerPage.backToHomeText);
   });
 });

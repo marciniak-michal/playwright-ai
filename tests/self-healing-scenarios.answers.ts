@@ -31,66 +31,6 @@ import { expect, test } from '../src/fixtures/index.fixture';
  * ability to distinguish test-side errors from application-side regressions.
  */
 
-// ─── Klasa 1 — data-testid attribute change ───────────────────────────────────
-// Tests use wrong data-testid values. The AI must identify the correct
-// attribute from the DOM tree and update the expected selector.
-
-test.describe('Klasa 1 — data-testid attribute change', () => {
-  test(
-    'should locate email input on login page by data-testid',
-    { tag: ['@auth', '@regression'] },
-    async ({ page, pages }) => {
-      await pages.loginPage.goto();
-
-      // ❌ Wrong testid — correct value: 'email-input'
-      await expect(page.getByTestId('user-email-field')).toBeVisible();
-    }
-  );
-
-  test(
-    'should locate password input on login page by data-testid',
-    { tag: ['@auth', '@regression'] },
-    async ({ page, pages }) => {
-      await pages.loginPage.goto();
-
-      // ❌ Wrong testid — correct value: 'password-input'
-      await expect(page.getByTestId('user-password-field')).toBeVisible();
-    }
-  );
-
-  test(
-    'should locate submit button on login page by data-testid',
-    { tag: ['@auth', '@regression'] },
-    async ({ page, pages }) => {
-      await pages.loginPage.goto();
-
-      // ❌ Wrong testid — correct value: 'login-submit-btn'
-      await expect(page.getByTestId('btn-login')).toBeVisible();
-    }
-  );
-
-  test(
-    'should locate display name input on register page by data-testid',
-    { tag: ['@auth', '@regression'] },
-    async ({ page, pages }) => {
-      await pages.registerPage.goto();
-
-      // ❌ Wrong testid — correct value: 'display-name-input'
-      await expect(page.getByTestId('name-input')).toBeVisible();
-    }
-  );
-
-  test(
-    'should locate submit button on register page by data-testid',
-    { tag: ['@auth', '@regression'] },
-    async ({ page, pages }) => {
-      await pages.registerPage.goto();
-
-      // ❌ Wrong testid — correct value: 'register-submit-btn'
-      await expect(page.getByTestId('btn-register')).toBeVisible();
-    }
-  );
-});
 
 // ─── Klasa 2 — Visible text change ────────────────────────────────────────────
 // Tests assert wrong expected text. The AI must read the actual text from the
@@ -493,4 +433,41 @@ test.describe('Klasa 8 — Typo in test source', () => {
       await expect(pages.registerPage.errorAlert).toHaveText('Plaese enter a valld emial addres');
     }
   );
+});
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+test.describe('Klasa 1', () => {
+  test('should locate submit button', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
+
+    await expect(pages.registerPage.submitButton).toBeVisible();
+  });
+
+  test('should locate display name input', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
+
+    await expect(pages.registerPage.displayNameInput).toBeVisible();
+  });
+
+  test('should locate email input', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
+
+    await expect(pages.registerPage.emailInput).toBeVisible();
+  });
+
+  test('should locate display name label', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
+
+    await expect(pages.registerPage.displayNameLabel).toBeVisible();
+  });
+
+  test('should locate login here link', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
+
+    await expect(pages.registerPage.loginHereLink).toBeVisible();
+  });
 });
