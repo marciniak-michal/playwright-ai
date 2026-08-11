@@ -58,6 +58,7 @@ async function callAi(context: HealingContext): Promise<AiResponse> {
   - If the failing \`expect()\` obtains the locator directly from \`page\` (e.g. \`page.getByTestId(...)\, \`page.getByRole(...)\, \`page.locator(...)\'\`), the wrong value is in the TEST FILE — fix it there, do NOT touch any page object.
   - Only fix a page object when the failing locator is accessed through a page object property (e.g. \`pages.loginPage.emailInput\`\, \`this.submitButton\`). In that case fix the page object and do NOT touch the test file.
   - Prefer changing only the locator value: when possible, modify only the selector string or value and do NOT change the locator method. For example, if the code uses \`page.locator('label[for="displayNameLabel"]')\`, do not replace it with \`page.getByTestId(...)\` or \`page.getByRole(...)\`; preserve the original locator call and adjust only its argument(s) e.g. \`page.locator('label[for="proper value"]')\`.
+  - CRITICAL — Page Object text constants used as expected values: When an \`expect()\` assertion passes a Page Object property as the expected value (e.g. \`toHaveText(pages.registerPage.backToHomeText)\`), that property is a text constant defined in the page object class. If the actual DOM text differs from the constant's value, fix the string value of that constant in the page object file. NEVER replace the Page Object property reference in the test with a hardcoded string literal — the test is correct, the constant's value in the page object is wrong.
   - Do not recommend running tests. Only provide code fixes.
   - Return ONLY valid JSON matching the schema at the end — no markdown, no explanation outside JSON.
 
@@ -69,6 +70,7 @@ A test has failed. There are four possible root causes — identify which applie
 2. **Test typo**: A wrong or garbled string in the test file (e.g. \`'UserwqefTEs Login'\`) that doesn't match what the DOM actually shows.
 3. **Wrong assertion logic**: The \`expect()\` matcher or \`.not\` negation is incorrect given what the page actually shows.
 4. **PageObject locator typo**: A locator in a page object is wrong (bad selector, wrong \`data-testid\`, etc.) even though the element exists in the DOM. Fix the locator in the page object only — do NOT touch the test file.
+5. **PageObject text constant typo**: The assertion passes a page object property as the expected value (e.g. \`toHaveText(pages.registerPage.backToHomeText)\`) and the string assigned to that constant in the page object is wrong or misspelled. Fix the constant's value in the page object — NEVER replace the property reference in the test with a hardcoded string.
 
 ${domTreeSection}
 
