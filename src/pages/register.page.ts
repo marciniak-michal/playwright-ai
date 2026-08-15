@@ -21,7 +21,7 @@ export class RegisterPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.emailInput = page.getByTestId('form-input-email');
+    this.emailInput = page.getByTestId('email-input');
     this.displayNameLabel = page.locator('label[for="displayNameLabel"]');
     this.displayNameInput = page.locator('#displayNameInput');
     this.passwordInput = page.getByTestId('password-input');
@@ -41,3 +41,4 @@ export class RegisterPage extends BasePage {
     await this.submitButton.click();
   }
 }
+
