@@ -15,6 +15,7 @@ export class RegisterPage extends BasePage {
   readonly subtitle: Locator;
   readonly loginHereLink: Locator;
   readonly backToHomeLink: Locator;
+  readonly passwordGuideLine: Locator;
 
   readonly backToHomeText = 'Backk to home';
 
@@ -29,7 +30,8 @@ export class RegisterPage extends BasePage {
     this.errorAlert = page.locator('[role="alert"]');
     this.subtitle = page.getByTestId('register-subtitle');
     this.loginHereLink = page.getByRole('button', { name: 'Login here' });
-    this.backToHomeLink = page.locator('div.auth-links p a[data-testid="home-link"]');
+    this.backToHomeLink = page.locator('div.auth-form div.auth-links p a[data-testid="home-link"]');
+    this.passwordGuideLine = page.locator('div.auth-info ul li#password-guideline');
   }
 
   async register(email: string, password: string, displayName?: string) {

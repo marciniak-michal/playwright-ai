@@ -1,45 +1,43 @@
 import { expect, test } from '../src/fixtures/index.fixture';
 
-test.describe('Klasa 2 — Visible text change', () => {
-  test('Case 1', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+test.describe('Klasa 3', () => {
+  test('Case - 1', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.subtitle).toHaveText('Here Create Your User Account');
+    await expect(page.locator('div.registration-guidelines ul li:nth-child(2) strong')).toHaveText(
+      'Display Name:'
+    );
   });
 
-  test('Case 2', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+  test('Case - 2', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.subtitle).toHaveText('Create Your User Account Here');
+    await expect(page.locator('div.auth-info ul.display-name li:nth-child(2) strong')).toHaveText(
+      'Display Name:'
+    );
   });
 
-  test('Case 3', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+  test('Case - 3', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.subtitle).toHaveText('Create Here Your User Account');
+    await expect(page.locator('div.auth-info ul li:nth-child(2) div strong')).toHaveText(
+      'Display Name:'
+    );
   });
 
-  test('Case 4', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+  test('Case - 4', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.subtitle).toHaveText('Create Your Userr Account');
+    await expect(page.locator('div.auth-info ul li:nth-child(2) strong span')).toHaveText(
+      'Display Name:'
+    );
   });
 
-  test('Case 5', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+  test('Case - 5', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
     await pages.registerPage.goto();
 
-    await expect(pages.registerPage.subtitle).toHaveText('Cratte your Users Accooun');
-  });
-
-  test('Case 6', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
-    await pages.registerPage.goto();
-
-    await expect(pages.registerPage.subtitle).toHaveText('Here you can make page profile');
-  });
-
-  test('Case 7', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
-    await pages.registerPage.goto();
-
-    await expect(pages.registerPage.backToHomeLink).toHaveText(pages.registerPage.backToHomeText);
+    await expect(page.locator('div.auth-info ul li:nth-child(5) strong')).toHaveText(
+      'Display Name:'
+    );
   });
 });
