@@ -1,43 +1,46 @@
 import { expect, test } from '../src/fixtures/index.fixture';
+import { generateUniqueEmail } from '../src/helpers/testDataHelper';
 
-test.describe('Klasa 3', () => {
-  test('Case - 1', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
+test.describe('Klasa 4', () => {
+  test('Case - 1', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    const wrongEmail = 'invalid-email-format';
+    const correctPassword = 'password123';
+
     await pages.registerPage.goto();
+    await pages.registerPage.register(wrongEmail, correctPassword);
 
-    await expect(page.locator('div.registration-guidelines ul li:nth-child(2) strong')).toHaveText(
-      'Display Name:'
+    await expect(pages.registerPage.errorAlert).not.toHaveText(
+      'Please enter a valid email address'
     );
   });
 
-  test('Case - 2', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
-    await pages.registerPage.goto();
+  test('Case - 2', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    const correctEmail = generateUniqueEmail();
+    const correctPassword = 'password123';
 
-    await expect(page.locator('div.auth-info ul.display-name li:nth-child(2) strong')).toHaveText(
-      'Display Name:'
-    );
+    await pages.registerPage.goto();
+    await pages.registerPage.register(correctEmail, correctPassword);
+
+    await expect(pages.registerPage.successMessage).toHaveText('Registration failed!');
   });
 
-  test('Case - 3', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
-    await pages.registerPage.goto();
+  test('Case - 3', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    const wrongEmail = 'invalid-email-format';
+    const correctPassword = 'password123';
 
-    await expect(page.locator('div.auth-info ul li:nth-child(2) div strong')).toHaveText(
-      'Display Name:'
-    );
+    await pages.registerPage.goto();
+    await pages.registerPage.register(wrongEmail, correctPassword);
+
+    await expect(pages.registerPage.errorAlert).not.toBeVisible();
   });
 
-  test('Case - 4', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
+  test('Case - 4', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    const correctEmail = generateUniqueEmail();
+    const correctPassword = 'password123';
+
     await pages.registerPage.goto();
+    await pages.registerPage.register(correctEmail, correctPassword);
 
-    await expect(page.locator('div.auth-info ul li:nth-child(2) strong span')).toHaveText(
-      'Display Name:'
-    );
-  });
-
-  test('Case - 5', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
-    await pages.registerPage.goto();
-
-    await expect(page.locator('div.auth-info ul li:nth-child(5) strong')).toHaveText(
-      'Display Name:'
-    );
+    await expect(pages.registerPage.errorAlert).toBeVisible();
   });
 });
