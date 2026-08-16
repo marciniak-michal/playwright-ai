@@ -26,8 +26,8 @@ export class RegisterPage extends BasePage {
     this.displayNameInput = page.locator('#displayedName');
     this.passwordInput = page.getByTestId('password-input');
     this.submitButton = page.getByTestId('register-submit-btn');
-    this.successMessage = page.getByText('Registration successful!');
-    this.errorAlert = page.locator('[role="alert"]');
+    this.successMessage = page.locator('div.success[role="alert"] div.notification-message');
+    this.errorAlert = page.locator('div.form__error[role="alert"]');
     this.subtitle = page.getByTestId('register-subtitle');
     this.loginHereLink = page.getByTestId('login-link');
     this.backToHomeLink = page.locator('div.auth-form div.auth-links p a[data-testid="home-link"]');
