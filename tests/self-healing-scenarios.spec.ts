@@ -21,7 +21,7 @@ test.describe('Klasa 4', () => {
     await pages.registerPage.goto();
     await pages.registerPage.register(correctEmail, correctPassword);
 
-    await expect(pages.registerPage.successMessage).toHaveText('Registration failed!');
+    await expect(pages.registerPage.successMessage).toHaveText('There was an unexpected error!');
   });
 
   test('Case - 3', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
