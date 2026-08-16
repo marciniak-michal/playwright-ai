@@ -21,15 +21,15 @@ export class RegisterPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.emailInput = page.getByTestId('form-input-email');
-    this.displayNameLabel = page.locator('label[for="displayNameLabel"]');
-    this.displayNameInput = page.locator('#displayNameInput');
+    this.emailInput = page.getByTestId('email-input');
+    this.displayNameLabel = page.locator('label[for="displayedName"]');
+    this.displayNameInput = page.locator('#displayedName');
     this.passwordInput = page.getByTestId('password-input');
-    this.submitButton = page.locator('button.submit-button');
-    this.successMessage = page.getByText('Registration successful!');
+    this.submitButton = page.getByTestId('register-submit-btn');
+    this.successMessage = page.getByText('Registration failed!');
     this.errorAlert = page.locator('.form__error[role="alert"]');
     this.subtitle = page.getByTestId('register-subtitle');
-    this.loginHereLink = page.getByRole('button', { name: 'Login here' });
+    this.loginHereLink = page.getByTestId('login-link');
     this.backToHomeLink = page.locator('div.auth-form div.auth-links p a[data-testid="home-link"]');
     this.passwordGuideLine = page.locator('div.auth-info ul li#password-guideline');
   }
