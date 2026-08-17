@@ -1,46 +1,45 @@
 import { expect, test } from '../src/fixtures/index.fixture';
-import { generateUniqueEmail } from '../src/helpers/testDataHelper';
 
-test.describe('Klasa 4', () => {
-  test('Case - 1', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+test.describe('Klasa 5', () => {
+  test('Case - 1', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
     const wrongEmail = 'invalid-email-format';
     const correctPassword = 'password123';
 
     await pages.registerPage.goto();
     await pages.registerPage.register(wrongEmail, correctPassword);
 
-    await expect(pages.registerPage.errorAlert).not.toHaveText(
-      'Please enter a valid email address'
-    );
+    await expect(page.locator('div.error-box[role="alert"]')).not.toBeVisible();
   });
 
-  test('Case - 2', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
-    const correctEmail = generateUniqueEmail();
-    const correctPassword = 'password123';
-
-    await pages.registerPage.goto();
-    await pages.registerPage.register(correctEmail, correctPassword);
-
-    await expect(pages.registerPage.successMessage).toHaveText('There was an unexpected error!');
-  });
-
-  test('Case - 3', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+  test('Case - 2', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
     const wrongEmail = 'invalid-email-format';
     const correctPassword = 'password123';
 
     await pages.registerPage.goto();
     await pages.registerPage.register(wrongEmail, correctPassword);
 
-    await expect(pages.registerPage.errorAlert).not.toBeVisible();
+    await expect(page.locator('div.authentication ul li#passwd-guide')).toBeVisible();
   });
 
-  test('Case - 4', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
-    const correctEmail = generateUniqueEmail();
+  test('Case - 3', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
+    const wrongEmail = 'invalid-email-format';
     const correctPassword = 'password123';
 
     await pages.registerPage.goto();
-    await pages.registerPage.register(correctEmail, correctPassword);
+    await pages.registerPage.register(wrongEmail, correctPassword);
 
-    await expect(pages.registerPage.errorAlert).toBeVisible();
+    await expect(page.locator('div.auth-info div li#description-password')).toBeVisible();
+  });
+
+  test('Case - 4', { tag: ['@auth', '@regression'] }, async ({ page, pages }) => {
+    await pages.registerPage.goto();
+
+    await expect(page.locator('div.container ul li#password-guideline')).not.toHaveText('Passwrd: Must have at least 3 charactrs long');
+  });
+
+  test('Case - 5', { tag: ['@auth', '@regression'] }, async ({ pages }) => {
+    await pages.registerPage.goto();
+
+    await expect(pages.registerPage.loginHereLink).toHaveText('Back to login page');
   });
 });
